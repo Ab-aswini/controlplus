@@ -146,27 +146,27 @@ export default function CartSidebar() {
                 <form id="checkout-form" onSubmit={handleCheckout} className="p-5 space-y-4">
                   <div>
                     <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Full Name *</label>
-                    <input type="text" required value={form.name} onChange={e => setForm({ ...form, name: e.target.value })}
+                    <input type="text" required placeholder="Enter your full name" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })}
                       className="w-full px-3.5 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
                   </div>
                   <div>
                     <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Phone Number *</label>
-                    <input type="tel" required value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })}
+                    <input type="tel" required placeholder="e.g. 9876543210" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })}
                       className="w-full px-3.5 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
                   </div>
                   <div>
                     <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Email (optional)</label>
-                    <input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })}
+                    <input type="email" placeholder="you@example.com" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })}
                       className="w-full px-3.5 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
                   </div>
                   <div>
                     <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Address (optional)</label>
-                    <textarea rows={2} value={form.address} onChange={e => setForm({ ...form, address: e.target.value })}
+                    <textarea rows={2} placeholder="Delivery address" value={form.address} onChange={e => setForm({ ...form, address: e.target.value })}
                       className="w-full px-3.5 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 resize-none" />
                   </div>
                   <div>
                     <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Notes (optional)</label>
-                    <textarea rows={2} value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })}
+                    <textarea rows={2} placeholder="Any special instructions" value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })}
                       className="w-full px-3.5 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 resize-none" />
                   </div>
 

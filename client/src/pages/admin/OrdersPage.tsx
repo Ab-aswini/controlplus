@@ -470,14 +470,14 @@ export default function OrdersPage() {
                       <div className="grid grid-cols-3 gap-2">
                         <div>
                           <label className="text-[10px] text-gray-400 uppercase">Qty</label>
-                          <input type="number" min="1" value={item.quantity}
+                          <input type="number" min="1" placeholder="1" value={item.quantity}
                             onChange={e => updateFormItem(idx, 'quantity', parseInt(e.target.value) || 1)}
                             className="w-full px-3 py-1.5 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm outline-none focus:ring-2 focus:ring-primary-500"
                           />
                         </div>
                         <div>
                           <label className="text-[10px] text-gray-400 uppercase">Unit Price</label>
-                          <input type="number" min="0" step="0.01" value={item.unit_price}
+                          <input type="number" min="0" step="0.01" placeholder="0.00" value={item.unit_price}
                             onChange={e => updateFormItem(idx, 'unit_price', parseFloat(e.target.value) || 0)}
                             className="w-full px-3 py-1.5 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm outline-none focus:ring-2 focus:ring-primary-500"
                           />

@@ -576,7 +576,7 @@ export default function InvoicesPage() {
                   <p className="text-gray-500">Subtotal: <strong className="text-gray-900 dark:text-white">{formatCurrency(subtotal)}</strong></p>
                   <div className="flex items-center gap-2 justify-end">
                     <span className="text-gray-500">Discount:</span>
-                    <input type="number" className="w-24 px-2 py-1 rounded border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-right text-sm text-gray-900 dark:text-white" value={form.discount || ''} onChange={e => setForm({ ...form, discount: Number(e.target.value) })} min={0} />
+                    <input type="number" placeholder="0" className="w-24 px-2 py-1 rounded border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-right text-sm text-gray-900 dark:text-white" value={form.discount || ''} onChange={e => setForm({ ...form, discount: Number(e.target.value) })} min={0} />
                   </div>
                   <p className="text-gray-500">Tax ({taxRate}%): <strong className="text-gray-900 dark:text-white">{formatCurrency(taxAmount)}</strong></p>
                   <p className="text-lg font-bold text-gray-900 dark:text-white border-t pt-2">Total: {formatCurrency(total)}</p>
@@ -588,7 +588,7 @@ export default function InvoicesPage() {
             <div className="grid grid-cols-2 gap-3 mb-6">
               <div>
                 <label className="block text-xs font-medium text-gray-500 mb-1">Payment Status</label>
-                <select className={inputClass} value={form.payment_status} onChange={e => setForm({ ...form, payment_status: e.target.value as any })}>
+                <select title="Payment Status" className={inputClass} value={form.payment_status} onChange={e => setForm({ ...form, payment_status: e.target.value as any })}>
                   <option value="unpaid">Unpaid</option>
                   <option value="partial">Partial</option>
                   <option value="paid">Paid</option>
@@ -638,8 +638,7 @@ export default function InvoicesPage() {
               </div>
               <div className="h-2.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-gradient-to-r from-green-500 to-green-400 rounded-full transition-all duration-500"
-                  style={{ width: `${Math.min(100, (((paymentModal as any).paid_amount || 0) / paymentModal.total) * 100)}%` }}
+                  className={`h-full bg-gradient-to-r from-green-500 to-green-400 rounded-full transition-all duration-500 w-[${Math.min(100, Math.round(((paymentModal as any).paid_amount || 0) / paymentModal.total * 100))}%]`}
                 />
               </div>
               <p className="text-xs text-gray-400 mt-1">
