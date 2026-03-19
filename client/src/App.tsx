@@ -2,7 +2,9 @@ import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { SettingsProvider } from './context/SettingsContext';
+import { CartProvider } from './context/CartContext';
 import { Toaster } from 'sonner';
+import CartSidebar from './components/shared/CartSidebar';
 
 import ProgressBar from './components/shared/ProgressBar';
 import PublicLayout from './components/layout/PublicLayout';
@@ -28,6 +30,7 @@ import SettingsPage from './pages/admin/SettingsPage';
 import InvoicesPage from './pages/admin/InvoicesPage';
 import PartnersManagePage from './pages/admin/PartnersManagePage';
 import TestimonialsManagePage from './pages/admin/TestimonialsManagePage';
+import ServicesManagePage from './pages/admin/ServicesManagePage';
 
 function ProtectedRoute() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -60,7 +63,7 @@ export default function App() {
           <ProgressBar />
           <Routes>
             {/* Public */}
-            <Route element={<PublicLayout />}>
+            <Route element={<CartProvider><PublicLayout /><CartSidebar /></CartProvider>}>
               <Route path="/" element={<HomePage />} />
               <Route path="/products" element={<ProductsPage />} />
               <Route path="/products/:slug" element={<ProductDetailPage />} />
@@ -88,6 +91,7 @@ export default function App() {
                 <Route path="/admin/invoices" element={<InvoicesPage />} />
                 <Route path="/admin/partners" element={<PartnersManagePage />} />
                 <Route path="/admin/testimonials" element={<TestimonialsManagePage />} />
+                <Route path="/admin/services" element={<ServicesManagePage />} />
               </Route>
             </Route>
           </Routes>

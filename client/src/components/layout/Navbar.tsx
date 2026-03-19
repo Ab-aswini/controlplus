@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Sun, Moon } from 'lucide-react';
+import { Menu, X, Sun, Moon, ShoppingCart } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
+import { useCart } from '../../context/CartContext';
 import { NAV_LINKS } from '../../utils/constants';
 import { cn } from '../../utils/cn';
 import Logo from '../ui/Logo';
@@ -10,11 +11,14 @@ import Logo from '../ui/Logo';
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
+  const { totalItems, openCart } = useCart();
   const location = useLocation();
 
   return (
-    <nav className="sticky top-0 z-50 bg-white/80 dark:bg-gray-950/80 backdrop-blur-xl border-b border-gray-200 dark:border-gray-800">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <>
+      <div className="sticky top-0 z-50 md:top-4 md:pt-2 w-full px-0 md:px-4 max-w-7xl mx-auto transition-all duration-300">
+        <nav className="bg-white/60 dark:bg-gray-950/60 backdrop-blur-2xl border-b md:border border-gray-200/50 dark:border-gray-800/50 shadow-sm md:shadow-lg md:rounded-2xl transition-all duration-300">
+          <div className="px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <Link to="/" className="flex items-center">
             <Logo dark={theme === 'dark'} />
@@ -56,15 +60,42 @@ export default function Navbar() {
                 </motion.div>
               </AnimatePresence>
             </button>
+            {/* Cart Icon */}
+            <button
+              onClick={openCart}
+              className="relative p-2 rounded-lg text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 transition-colors w-9 h-9 flex items-center justify-center"
+              aria-label="Open cart"
+            >
+              <ShoppingCart className="w-5 h-5" />
+              {totalItems > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 w-4.5 h-4.5 bg-primary-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center min-w-[18px] h-[18px] leading-none">
+                  {totalItems}
+                </span>
+              )}
+            </button>
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="md:hidden p-3 rounded-lg text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 z-50 relative"
+              className="md:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 z-50 relative w-10 h-10 flex items-center justify-center overflow-hidden"
               aria-label="Toggle mobile menu"
             >
-              {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.div
+                  key={mobileOpen ? 'close' : 'open'}
+                  initial={{ opacity: 0, rotate: -90, scale: 0.8 }}
+                  animate={{ opacity: 1, rotate: 0, scale: 1 }}
+                  exit={{ opacity: 0, rotate: 90, scale: 0.8 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute"
+                >
+                  {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                </motion.div>
+              </AnimatePresence>
             </button>
           </div>
         </div>
+      </div>
+
+        </nav>
       </div>
 
       <AnimatePresence>
@@ -103,6 +134,6 @@ export default function Navbar() {
           </>
         )}
       </AnimatePresence>
-    </nav>
+    </>
   );
 }

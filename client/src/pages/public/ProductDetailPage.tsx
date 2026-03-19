@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Monitor, HardDrive, CheckCircle, XCircle, MessageSquare, X, Mail, MessageCircle, CreditCard } from 'lucide-react';
+import { ArrowLeft, Monitor, HardDrive, CheckCircle, XCircle, MessageSquare, X, Mail, MessageCircle, CreditCard, ShoppingCart, Plus, Minus } from 'lucide-react';
 import { Product } from '../../types';
 import { getProduct, getProducts } from '../../api/products';
 import { submitInquiry } from '../../api/inquiries';
@@ -12,6 +12,7 @@ import ProductGallery from '../../components/shared/ProductGallery';
 import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { cn } from '../../utils/cn';
 import { toast } from 'sonner';
+import { useCart } from '../../context/CartContext';
 
 export default function ProductDetailPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -23,6 +24,8 @@ export default function ProductDetailPage() {
   const [inquiryForm, setInquiryForm] = useState({ name: '', phone: '', email: '', message: '' });
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [cartQty, setCartQty] = useState(1);
+  const { addItem } = useCart();
 
   useEffect(() => {
     if (!slug) return;
@@ -192,6 +195,39 @@ export default function ProductDetailPage() {
             )}
           </div>
 
+          {/* Add to Cart */}
+          {product.stock_status === 'in_stock' && (
+            <div className="flex items-center gap-3 mb-6">
+              <div className="flex items-center border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden">
+                <button onClick={() => setCartQty(q => Math.max(1, q - 1))} className="px-3 py-2.5 text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors" aria-label="Decrease quantity">
+                  <Minus className="w-4 h-4" />
+                </button>
+                <span className="px-4 py-2.5 text-sm font-bold text-gray-900 dark:text-white min-w-[40px] text-center">{cartQty}</span>
+                <button onClick={() => setCartQty(q => q + 1)} className="px-3 py-2.5 text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors" aria-label="Increase quantity">
+                  <Plus className="w-4 h-4" />
+                </button>
+              </div>
+              <button
+                onClick={() => {
+                  const primaryImage = product.images?.find(i => i.is_primary) || product.images?.[0];
+                  addItem({
+                    product_id: product.id,
+                    name: product.name,
+                    slug: product.slug,
+                    price: product.price || 0,
+                    qty: cartQty,
+                    image_url: primaryImage?.image_url || null,
+                  });
+                  toast.success(`${product.name} added to cart`);
+                  setCartQty(1);
+                }}
+                className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary-600 text-white font-semibold rounded-xl hover:bg-primary-700 transition-colors shadow-lg shadow-primary-600/25"
+              >
+                <ShoppingCart className="w-5 h-5" /> Add to Cart
+              </button>
+            </div>
+          )}
+
           {/* Payment info note */}
           {(channels?.whatsapp || channels?.email) && (
             <div className="p-4 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-xl mb-6">
@@ -220,7 +256,7 @@ export default function ProductDetailPage() {
       {related.length > 0 && (
         <div className="mt-16">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Related Products</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
             {related.map(p => <ProductCard key={p.id} product={p} />)}
           </div>
         </div>

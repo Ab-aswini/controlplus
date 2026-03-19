@@ -12,8 +12,8 @@ export default function Footer() {
   return (
     <footer className="bg-gray-900 dark:bg-gray-950 text-gray-400 border-t border-gray-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div className="md:col-span-1">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 gap-y-10">
+          <div className="col-span-2 md:col-span-1">
             <Link to="/" className="flex items-center mb-4">
               <Logo dark />
             </Link>
@@ -22,7 +22,7 @@ export default function Footer() {
             </p>
           </div>
 
-          <div>
+          <div className="col-span-1">
             <h4 className="text-white font-semibold mb-4">Quick Links</h4>
             <ul className="space-y-2 text-sm">
               <li><Link to="/products" className="hover:text-primary-400 transition-colors">Products</Link></li>
@@ -33,7 +33,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          <div>
+          <div className="col-span-1">
             <h4 className="text-white font-semibold mb-4">Solutions</h4>
             <ul className="space-y-2 text-sm">
               <li><Link to="/products?type=software&category=billing" className="hover:text-primary-400 transition-colors">Billing Software</Link></li>
@@ -44,7 +44,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          <div>
+          <div className="col-span-2 md:col-span-1">
             <h4 className="text-white font-semibold mb-4">Contact</h4>
             <ul className="space-y-3 text-sm">
               <li className="flex items-start gap-2">

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { Plus, Printer, Trash2, Receipt, Loader2, X, Eye } from 'lucide-react';
-import { Invoice, InvoiceItem, getInvoices, createInvoice, deleteInvoice, generateInvoiceNumber } from '../../api/invoices';
+import { Plus, Printer, Trash2, Receipt, Loader2, X, Eye, IndianRupee, TrendingUp, Clock, CheckCircle2, CreditCard, Edit2 } from 'lucide-react';
+import { Invoice, InvoiceItem, getInvoices, createInvoice, updateInvoice, deleteInvoice, generateInvoiceNumber, updatePaymentStatus, recordPayment, getPaymentHistory, PaymentRecord } from '../../api/invoices';
 import { getProducts } from '../../api/products';
 import { Product } from '../../types';
 import { useSettings } from '../../context/SettingsContext';
@@ -73,86 +73,82 @@ function InvoicePrintView({ invoice, company, onClose }: { invoice: Invoice; com
         </div>
 
         <div ref={printRef} className="text-gray-900">
-          <div className="header" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 32, paddingBottom: 16, borderBottom: '2px solid #e5e7eb' }}>
+          <div className="inv-header">
             <div>
-              <div className="company-name" style={{ fontSize: 24, fontWeight: 700, color: '#0f766e' }}>{company.name}</div>
-              <p style={{ fontSize: 13, color: '#6b7280' }}>{company.address}</p>
-              <p style={{ fontSize: 13, color: '#6b7280' }}>{company.phone} • {company.email}</p>
-              {company.gstin && <p style={{ fontSize: 13, color: '#6b7280' }}>GSTIN: {company.gstin}</p>}
+              <div className="inv-company">{company.name}</div>
+              <p className="inv-sub">{company.address}</p>
+              <p className="inv-sub">{company.phone} • {company.email}</p>
+              {company.gstin && <p className="inv-sub">GSTIN: {company.gstin}</p>}
             </div>
-            <div style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: 28, fontWeight: 700 }}>INVOICE</div>
-              <p style={{ fontSize: 14, color: '#6b7280' }}>{invoice.invoice_number}</p>
-              <p style={{ fontSize: 14, color: '#6b7280' }}>{formatDate(invoice.created_at)}</p>
-              <span className={`status status-${invoice.payment_status}`} style={{
-                display: 'inline-block', padding: '4px 12px', borderRadius: 9999, fontSize: 12, fontWeight: 600,
-                background: invoice.payment_status === 'paid' ? '#dcfce7' : invoice.payment_status === 'partial' ? '#fef3c7' : '#fee2e2',
-                color: invoice.payment_status === 'paid' ? '#166534' : invoice.payment_status === 'partial' ? '#92400e' : '#991b1b',
-              }}>
+            <div className="inv-right">
+              <div className="inv-title">INVOICE</div>
+              <p className="inv-num">{invoice.invoice_number}</p>
+              <p className="inv-num">{formatDate(invoice.created_at)}</p>
+              <span className={`inv-status inv-status-${invoice.payment_status}`}>
                 {invoice.payment_status.toUpperCase()}
               </span>
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginBottom: 32 }}>
+          <div className="inv-meta">
             <div>
-              <h4 style={{ fontSize: 12, textTransform: 'uppercase', color: '#6b7280', marginBottom: 8, fontWeight: 600 }}>Bill To</h4>
-              <p style={{ fontSize: 14, lineHeight: 1.6, fontWeight: 600 }}>{invoice.customer_name}</p>
-              {invoice.customer_phone && <p style={{ fontSize: 14, color: '#6b7280' }}>{invoice.customer_phone}</p>}
-              {invoice.customer_email && <p style={{ fontSize: 14, color: '#6b7280' }}>{invoice.customer_email}</p>}
-              {invoice.customer_address && <p style={{ fontSize: 14, color: '#6b7280' }}>{invoice.customer_address}</p>}
+              <h4 className="inv-meta-label">Bill To</h4>
+              <p className="inv-meta-bold">{invoice.customer_name}</p>
+              {invoice.customer_phone && <p className="inv-num">{invoice.customer_phone}</p>}
+              {invoice.customer_email && <p className="inv-num">{invoice.customer_email}</p>}
+              {invoice.customer_address && <p className="inv-num">{invoice.customer_address}</p>}
             </div>
-            <div style={{ textAlign: 'right' }}>
-              <h4 style={{ fontSize: 12, textTransform: 'uppercase', color: '#6b7280', marginBottom: 8, fontWeight: 600 }}>Payment Method</h4>
-              <p style={{ fontSize: 14 }}>{invoice.payment_method || 'N/A'}</p>
+            <div className="inv-right">
+              <h4 className="inv-meta-label">Payment Method</h4>
+              <p className="inv-meta-val">{invoice.payment_method || 'N/A'}</p>
             </div>
           </div>
 
-          <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 24 }}>
+          <table className="inv-table">
             <thead>
               <tr>
-                <th style={{ background: '#f3f4f6', padding: '10px 16px', textAlign: 'left', fontSize: 12, textTransform: 'uppercase', fontWeight: 600, color: '#374151', borderBottom: '2px solid #e5e7eb' }}>#</th>
-                <th style={{ background: '#f3f4f6', padding: '10px 16px', textAlign: 'left', fontSize: 12, textTransform: 'uppercase', fontWeight: 600, color: '#374151', borderBottom: '2px solid #e5e7eb' }}>Item</th>
-                <th style={{ background: '#f3f4f6', padding: '10px 16px', textAlign: 'right', fontSize: 12, textTransform: 'uppercase', fontWeight: 600, color: '#374151', borderBottom: '2px solid #e5e7eb' }}>Qty</th>
-                <th style={{ background: '#f3f4f6', padding: '10px 16px', textAlign: 'right', fontSize: 12, textTransform: 'uppercase', fontWeight: 600, color: '#374151', borderBottom: '2px solid #e5e7eb' }}>Rate</th>
-                <th style={{ background: '#f3f4f6', padding: '10px 16px', textAlign: 'right', fontSize: 12, textTransform: 'uppercase', fontWeight: 600, color: '#374151', borderBottom: '2px solid #e5e7eb' }}>Amount</th>
+                <th className="inv-th">#</th>
+                <th className="inv-th">Item</th>
+                <th className="inv-th-right">Qty</th>
+                <th className="inv-th-right">Rate</th>
+                <th className="inv-th-right">Amount</th>
               </tr>
             </thead>
             <tbody>
               {invoice.items.map((item, i) => (
                 <tr key={i}>
-                  <td style={{ padding: '10px 16px', borderBottom: '1px solid #f3f4f6', fontSize: 14 }}>{i + 1}</td>
-                  <td style={{ padding: '10px 16px', borderBottom: '1px solid #f3f4f6', fontSize: 14 }}>
+                  <td className="inv-td">{i + 1}</td>
+                  <td className="inv-td">
                     <strong>{item.name}</strong>
-                    {item.description && <p style={{ fontSize: 12, color: '#6b7280' }}>{item.description}</p>}
+                    {item.description && <p className="inv-item-desc">{item.description}</p>}
                   </td>
-                  <td style={{ padding: '10px 16px', borderBottom: '1px solid #f3f4f6', fontSize: 14, textAlign: 'right' }}>{item.qty}</td>
-                  <td style={{ padding: '10px 16px', borderBottom: '1px solid #f3f4f6', fontSize: 14, textAlign: 'right' }}>{formatCurrency(item.price)}</td>
-                  <td style={{ padding: '10px 16px', borderBottom: '1px solid #f3f4f6', fontSize: 14, textAlign: 'right' }}>{formatCurrency(item.total)}</td>
+                  <td className="inv-td-right">{item.qty}</td>
+                  <td className="inv-td-right">{formatCurrency(item.price)}</td>
+                  <td className="inv-td-right">{formatCurrency(item.total)}</td>
                 </tr>
               ))}
             </tbody>
           </table>
 
-          <div style={{ marginLeft: 'auto', width: 280 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', fontSize: 14 }}>
+          <div className="inv-totals">
+            <div className="inv-total-row">
               <span>Subtotal</span><span>{formatCurrency(invoice.subtotal)}</span>
             </div>
             {invoice.discount > 0 && (
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', fontSize: 14, color: '#16a34a' }}>
+              <div className="inv-total-discount">
                 <span>Discount</span><span>-{formatCurrency(invoice.discount)}</span>
               </div>
             )}
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', fontSize: 14 }}>
+            <div className="inv-total-row">
               <span>Tax ({invoice.tax_rate}%)</span><span>{formatCurrency(invoice.tax_amount)}</span>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 0 6px', fontSize: 18, fontWeight: 700, borderTop: '2px solid #1a1a1a', marginTop: 8 }}>
+            <div className="inv-total-grand">
               <span>Total</span><span>{formatCurrency(invoice.total)}</span>
             </div>
           </div>
 
           {invoice.notes && (
-            <div style={{ marginTop: 24, padding: 12, background: '#f9fafb', borderRadius: 8, fontSize: 13, color: '#6b7280' }}>
+            <div className="inv-notes">
               <strong>Notes:</strong> {invoice.notes}
             </div>
           )}
@@ -170,7 +166,13 @@ export default function InvoicesPage() {
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [editingInvoice, setEditingInvoice] = useState<Invoice | null>(null);
   const [viewInvoice, setViewInvoice] = useState<Invoice | null>(null);
+  const [statusFilter, setStatusFilter] = useState('');
+  const [paymentModal, setPaymentModal] = useState<Invoice | null>(null);
+  const [paymentForm, setPaymentForm] = useState({ amount: '', method: 'cash', reference: '', notes: '' });
+  const [paymentHistory, setPaymentHistory] = useState<PaymentRecord[]>([]);
+  const [savingPayment, setSavingPayment] = useState(false);
 
   // Form state
   const [form, setForm] = useState({
@@ -224,57 +226,102 @@ export default function InvoicesPage() {
   const taxAmount = (subtotal - form.discount) * taxRate / 100;
   const total = subtotal - form.discount + taxAmount;
 
-  const handleCreate = async () => {
+  const handleSave = async () => {
     if (!form.customer_name || items.length === 0 || !items[0].name) {
       toast.error('Please fill customer name and at least one item');
       return;
     }
     setSaving(true);
     try {
-      const prefix = settings?.invoice_settings?.prefix || 'INV';
-      const nextNum = settings?.invoice_settings?.next_number || invoices.length + 1;
-      const invoiceNumber = await generateInvoiceNumber(prefix, nextNum);
-
-      const { data: { user } } = await (await import('../../lib/supabase')).supabase.auth.getUser();
-
-      await createInvoice({
-        invoice_number: invoiceNumber,
-        order_id: null,
-        customer_name: form.customer_name,
-        customer_phone: form.customer_phone || null,
-        customer_email: form.customer_email || null,
-        customer_address: form.customer_address || null,
-        items,
-        subtotal,
-        tax_rate: taxRate,
-        tax_amount: taxAmount,
-        discount: form.discount,
-        total,
-        payment_status: form.payment_status,
-        payment_method: form.payment_method || null,
-        notes: form.notes || null,
-        created_by: user?.id || null,
-      });
-
-      // Increment next invoice number
-      if (settings?.invoice_settings) {
-        const { updateSetting } = await import('../../api/settings');
-        await updateSetting('invoice_settings', {
-          ...settings.invoice_settings,
-          next_number: nextNum + 1,
+      if (editingInvoice) {
+        // Update existing invoice
+        await updateInvoice(editingInvoice.id, {
+          customer_name: form.customer_name,
+          customer_phone: form.customer_phone || null,
+          customer_email: form.customer_email || null,
+          customer_address: form.customer_address || null,
+          items,
+          subtotal,
+          tax_rate: taxRate,
+          tax_amount: taxAmount,
+          discount: form.discount,
+          total,
+          notes: form.notes || null,
         });
+        toast.success('Invoice updated!');
+      } else {
+        // Create new invoice
+        const prefix = settings?.invoice_settings?.prefix || 'INV';
+        const nextNum = settings?.invoice_settings?.next_number || invoices.length + 1;
+        const invoiceNumber = await generateInvoiceNumber(prefix, nextNum);
+
+        const { data: { user } } = await (await import('../../lib/supabase')).supabase.auth.getUser();
+
+        await createInvoice({
+          invoice_number: invoiceNumber,
+          order_id: null,
+          customer_name: form.customer_name,
+          customer_phone: form.customer_phone || null,
+          customer_email: form.customer_email || null,
+          customer_address: form.customer_address || null,
+          items,
+          subtotal,
+          tax_rate: taxRate,
+          tax_amount: taxAmount,
+          discount: form.discount,
+          total,
+          payment_status: form.payment_status,
+          payment_method: form.payment_method || null,
+          notes: form.notes || null,
+          created_by: user?.id || null,
+        });
+
+        // Increment next invoice number
+        if (settings?.invoice_settings) {
+          const { updateSetting } = await import('../../api/settings');
+          await updateSetting('invoice_settings', {
+            ...settings.invoice_settings,
+            next_number: nextNum + 1,
+          });
+        }
+        toast.success('Invoice created!');
       }
 
-      toast.success('Invoice created!');
-      setShowCreate(false);
-      setForm({ customer_name: '', customer_phone: '', customer_email: '', customer_address: '', payment_status: 'unpaid', payment_method: '', notes: '', discount: 0 });
-      setItems([{ name: '', description: '', qty: 1, price: 0, total: 0 }]);
+      closeModal();
       fetchInvoices();
     } catch (err: any) {
-      toast.error(err.message || 'Failed to create invoice');
+      toast.error(err.message || `Failed to ${editingInvoice ? 'update' : 'create'} invoice`);
     } finally {
       setSaving(false);
     }
+  };
+
+  const openCreateModal = () => {
+    setEditingInvoice(null);
+    setForm({ customer_name: '', customer_phone: '', customer_email: '', customer_address: '', payment_status: 'unpaid', payment_method: '', notes: '', discount: 0 });
+    setItems([{ name: '', description: '', qty: 1, price: 0, total: 0 }]);
+    setShowCreate(true);
+  };
+
+  const openEditModal = (inv: Invoice) => {
+    setEditingInvoice(inv);
+    setForm({
+      customer_name: inv.customer_name || '',
+      customer_phone: inv.customer_phone || '',
+      customer_email: inv.customer_email || '',
+      customer_address: inv.customer_address || '',
+      payment_status: inv.payment_status,
+      payment_method: inv.payment_method || '',
+      notes: inv.notes || '',
+      discount: inv.discount || 0,
+    });
+    setItems(inv.items && inv.items.length > 0 ? inv.items : [{ name: '', description: '', qty: 1, price: 0, total: 0 }]);
+    setShowCreate(true);
+  };
+
+  const closeModal = () => {
+    setShowCreate(false);
+    setEditingInvoice(null);
   };
 
   const handleDelete = async (id: string) => {
@@ -294,17 +341,110 @@ export default function InvoicesPage() {
     email: settings?.contact_info?.email || '',
   };
 
+  // Revenue stats
+  const totalRevenue = invoices.reduce((sum, i) => sum + i.total, 0);
+  const paidRevenue = invoices.filter(i => i.payment_status === 'paid').reduce((sum, i) => sum + i.total, 0);
+  const unpaidRevenue = invoices.filter(i => i.payment_status === 'unpaid').reduce((sum, i) => sum + i.total, 0);
+  const partialRevenue = invoices.filter(i => i.payment_status === 'partial').reduce((sum, i) => sum + i.total, 0);
+  const filteredInvoices = statusFilter ? invoices.filter(i => i.payment_status === statusFilter) : invoices;
+
+  const handlePaymentStatusChange = async (inv: Invoice, newStatus: 'unpaid' | 'partial' | 'paid') => {
+    if (newStatus === 'partial') {
+      // Open payment modal to record partial payment
+      setPaymentModal(inv);
+      setPaymentForm({ amount: '', method: 'cash', reference: '', notes: '' });
+      try {
+        const history = await getPaymentHistory(inv.id);
+        setPaymentHistory(history);
+      } catch { setPaymentHistory([]); }
+      return;
+    }
+    try {
+      const paidAmount = newStatus === 'paid' ? inv.total : 0;
+      await updatePaymentStatus(inv.id, newStatus, paidAmount);
+      if (newStatus === 'paid') {
+        await recordPayment({ invoice_id: inv.id, amount: inv.total - ((inv as any).paid_amount || 0), method: 'cash', reference: null, notes: 'Marked as fully paid' });
+      }
+      toast.success(`Invoice ${inv.invoice_number} marked as ${newStatus}`);
+      fetchInvoices();
+    } catch { toast.error('Failed to update status'); }
+  };
+
+  const handleRecordPayment = async () => {
+    if (!paymentModal || !paymentForm.amount) return;
+    setSavingPayment(true);
+    try {
+      const amount = parseFloat(paymentForm.amount);
+      await recordPayment({
+        invoice_id: paymentModal.id,
+        amount,
+        method: paymentForm.method,
+        reference: paymentForm.reference || null,
+        notes: paymentForm.notes || null,
+      });
+      const prevPaid = (paymentModal as any).paid_amount || 0;
+      const newPaid = prevPaid + amount;
+      const newStatus = newPaid >= paymentModal.total ? 'paid' : 'partial';
+      await updatePaymentStatus(paymentModal.id, newStatus, newPaid);
+      toast.success(`₹${amount.toLocaleString('en-IN')} payment recorded`);
+      setPaymentModal(null);
+      fetchInvoices();
+    } catch { toast.error('Failed to record payment'); }
+    finally { setSavingPayment(false); }
+  };
+
   const inputClass = 'w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-primary-500 text-sm';
+  const STATUS_TABS = [{ value: '', label: 'All' }, { value: 'unpaid', label: 'Unpaid' }, { value: 'partial', label: 'Partial' }, { value: 'paid', label: 'Paid' }];
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white">Invoices</h2>
-          <p className="text-sm text-gray-500">{invoices.length} invoices total</p>
+      {/* Revenue Summary Cards */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-950 flex items-center justify-center"><IndianRupee className="w-4 h-4 text-blue-600" /></div>
+            <span className="text-xs font-medium text-gray-500 uppercase">Total Revenue</span>
+          </div>
+          <p className="text-xl font-bold text-gray-900 dark:text-white">{formatCurrency(totalRevenue)}</p>
+          <p className="text-xs text-gray-400 mt-1">{invoices.length} invoices</p>
         </div>
-        <button onClick={() => setShowCreate(true)} className="inline-flex items-center gap-2 px-4 py-2.5 bg-primary-600 text-white rounded-lg hover:bg-primary-700 font-medium text-sm">
+        <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-8 h-8 rounded-lg bg-green-100 dark:bg-green-950 flex items-center justify-center"><CheckCircle2 className="w-4 h-4 text-green-600" /></div>
+            <span className="text-xs font-medium text-gray-500 uppercase">Paid</span>
+          </div>
+          <p className="text-xl font-bold text-green-600">{formatCurrency(paidRevenue)}</p>
+          <p className="text-xs text-gray-400 mt-1">{invoices.filter(i => i.payment_status === 'paid').length} invoices</p>
+        </div>
+        <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-8 h-8 rounded-lg bg-red-100 dark:bg-red-950 flex items-center justify-center"><Clock className="w-4 h-4 text-red-600" /></div>
+            <span className="text-xs font-medium text-gray-500 uppercase">Unpaid</span>
+          </div>
+          <p className="text-xl font-bold text-red-600">{formatCurrency(unpaidRevenue)}</p>
+          <p className="text-xs text-gray-400 mt-1">{invoices.filter(i => i.payment_status === 'unpaid').length} invoices</p>
+        </div>
+        <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-950 flex items-center justify-center"><TrendingUp className="w-4 h-4 text-amber-600" /></div>
+            <span className="text-xs font-medium text-gray-500 uppercase">Partial</span>
+          </div>
+          <p className="text-xl font-bold text-amber-600">{formatCurrency(partialRevenue)}</p>
+          <p className="text-xs text-gray-400 mt-1">{invoices.filter(i => i.payment_status === 'partial').length} invoices</p>
+        </div>
+      </div>
+
+      {/* Header + Filter Tabs */}
+      <div className="flex items-center justify-between">
+        <div className="flex gap-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+          {STATUS_TABS.map(tab => (
+            <button key={tab.value} onClick={() => setStatusFilter(tab.value)}
+              className={cn('px-3 py-1.5 text-xs font-medium rounded-md transition-colors', statusFilter === tab.value ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 hover:text-gray-700')}>
+              {tab.label}
+            </button>
+          ))}
+        </div>
+        <button onClick={openCreateModal} className="inline-flex items-center gap-2 px-4 py-2.5 bg-primary-600 text-white rounded-lg hover:bg-primary-700 font-medium text-sm">
           <Plus className="w-4 h-4" /> Create Invoice
         </button>
       </div>
@@ -312,7 +452,7 @@ export default function InvoicesPage() {
       {/* Invoice List */}
       {loading ? (
         <div className="text-center py-16"><Loader2 className="w-8 h-8 text-primary-500 animate-spin mx-auto" /></div>
-      ) : invoices.length === 0 ? (
+      ) : filteredInvoices.length === 0 ? (
         <div className="text-center py-16">
           <Receipt className="w-12 h-12 text-gray-300 dark:text-gray-700 mx-auto mb-4" />
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No invoices yet</h3>
@@ -327,25 +467,49 @@ export default function InvoicesPage() {
                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Customer</th>
                 <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase">Amount</th>
                 <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase">Status</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Paid</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Date</th>
                 <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-800">
-              {invoices.map(inv => (
+              {filteredInvoices.map(inv => (
                 <tr key={inv.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50">
                   <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-white">{inv.invoice_number}</td>
                   <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">{inv.customer_name}</td>
                   <td className="px-4 py-3 text-sm text-right font-semibold text-gray-900 dark:text-white">{formatCurrency(inv.total)}</td>
                   <td className="px-4 py-3 text-center">
-                    <span className={cn('text-xs font-medium px-2.5 py-1 rounded-full', STATUS_COLORS[inv.payment_status])}>
-                      {inv.payment_status}
-                    </span>
+                    <select
+                      value={inv.payment_status}
+                      onChange={e => handlePaymentStatusChange(inv, e.target.value as 'unpaid' | 'partial' | 'paid')}
+                      aria-label={`Payment status for ${inv.invoice_number}`}
+                      title="Update payment status"
+                      className={cn('text-xs font-medium px-2 py-1 rounded-lg border-0 outline-none cursor-pointer', STATUS_COLORS[inv.payment_status])}
+                    >
+                      <option value="unpaid">unpaid</option>
+                      <option value="partial">partial</option>
+                      <option value="paid">paid</option>
+                    </select>
+                  </td>
+                  <td className="px-4 py-3 text-sm text-gray-500">
+                    {inv.payment_status === 'paid' ? (
+                      <span className="text-green-600 font-medium">{formatCurrency(inv.total)}</span>
+                    ) : (inv as any).paid_amount > 0 ? (
+                      <button onClick={() => { setPaymentModal(inv); setPaymentForm({ amount: '', method: 'cash', reference: '', notes: '' }); getPaymentHistory(inv.id).then(setPaymentHistory).catch(() => setPaymentHistory([])); }}
+                        className="text-amber-600 font-medium hover:underline cursor-pointer">
+                        {formatCurrency((inv as any).paid_amount)} <span className="text-gray-400">/ {formatCurrency(inv.total)}</span>
+                      </button>
+                    ) : inv.payment_status === 'unpaid' ? (
+                      <button onClick={() => handlePaymentStatusChange(inv, 'partial')} className="text-xs text-primary-600 hover:text-primary-700 font-medium">
+                        + Record Payment
+                      </button>
+                    ) : '—'}
                   </td>
                   <td className="px-4 py-3 text-sm text-gray-500">{formatDate(inv.created_at)}</td>
-                  <td className="px-4 py-3 text-right">
-                    <button onClick={() => setViewInvoice(inv)} className="p-1.5 text-gray-500 hover:text-primary-600" title="View & Print"><Eye className="w-4 h-4" /></button>
-                    <button onClick={() => handleDelete(inv.id)} className="p-1.5 text-gray-500 hover:text-red-600 ml-1" title="Delete"><Trash2 className="w-4 h-4" /></button>
+                  <td className="px-4 py-3 text-right whitespace-nowrap">
+                    <button onClick={() => openEditModal(inv)} className="p-1.5 text-gray-500 hover:text-primary-600" title="Edit" aria-label={`Edit invoice ${inv.invoice_number}`}><Edit2 className="w-4 h-4" /></button>
+                    <button onClick={() => setViewInvoice(inv)} className="p-1.5 text-gray-500 hover:text-primary-600 ml-1" title="View & Print" aria-label={`View invoice ${inv.invoice_number}`}><Eye className="w-4 h-4" /></button>
+                    <button onClick={() => handleDelete(inv.id)} className="p-1.5 text-gray-500 hover:text-red-600 ml-1" title="Delete" aria-label={`Delete invoice ${inv.invoice_number}`}><Trash2 className="w-4 h-4" /></button>
                   </td>
                 </tr>
               ))}
@@ -354,13 +518,13 @@ export default function InvoicesPage() {
         </div>
       )}
 
-      {/* Create Invoice Modal */}
+      {/* Create / Edit Invoice Modal */}
       {showCreate && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" onClick={() => setShowCreate(false)}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" onClick={closeModal}>
           <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 max-w-2xl w-full max-h-[90vh] overflow-auto shadow-xl" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white">Create Invoice</h3>
-              <button onClick={() => setShowCreate(false)} className="text-gray-400 hover:text-gray-600" aria-label="Close"><X className="w-5 h-5" /></button>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white">{editingInvoice ? `Edit Invoice (${editingInvoice.invoice_number})` : 'Create Invoice'}</h3>
+              <button onClick={closeModal} className="text-gray-400 hover:text-gray-600" aria-label="Close"><X className="w-5 h-5" /></button>
             </div>
 
             {/* Customer Info */}
@@ -382,6 +546,8 @@ export default function InvoicesPage() {
                       className={cn(inputClass, 'flex-1')}
                       value={products.find(p => p.name === item.name)?.id || '__custom__'}
                       onChange={e => selectProduct(i, e.target.value)}
+                      title="Select product"
+                      aria-label="Select product"
                     >
                       <option value="__custom__">— Custom Item —</option>
                       {products.map(p => (
@@ -392,7 +558,7 @@ export default function InvoicesPage() {
                     <input type="number" className={cn(inputClass, 'w-28')} placeholder="Rate" min={0} value={item.price || ''} onChange={e => updateItem(i, 'price', Number(e.target.value))} />
                     <span className="flex items-center text-sm font-semibold text-gray-700 dark:text-gray-300 min-w-[80px] text-right py-2">{formatCurrency(item.total)}</span>
                     {items.length > 1 && (
-                      <button onClick={() => removeItem(i)} className="p-2 text-red-500 hover:text-red-700"><Trash2 className="w-4 h-4" /></button>
+                      <button onClick={() => removeItem(i)} className="p-2 text-red-500 hover:text-red-700" aria-label={`Remove item ${i + 1}`} title="Remove item"><Trash2 className="w-4 h-4" /></button>
                     )}
                   </div>
                   {(!products.find(p => p.name === item.name)) && (
@@ -435,8 +601,8 @@ export default function InvoicesPage() {
             </div>
             <textarea className={cn(inputClass, 'mb-6')} placeholder="Notes (optional)" rows={2} value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} />
 
-            <button onClick={handleCreate} disabled={saving} className="w-full py-2.5 bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 disabled:opacity-50 transition-colors">
-              {saving ? 'Creating…' : 'Create Invoice'}
+            <button onClick={handleSave} disabled={saving} className="w-full py-2.5 bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 disabled:opacity-50 transition-colors">
+              {saving ? (editingInvoice ? 'Updating…' : 'Creating…') : (editingInvoice ? 'Update Invoice' : 'Create Invoice')}
             </button>
           </div>
         </div>
@@ -445,6 +611,105 @@ export default function InvoicesPage() {
       {/* Print Preview Modal */}
       {viewInvoice && (
         <InvoicePrintView invoice={viewInvoice} company={company} onClose={() => setViewInvoice(null)} />
+      )}
+
+      {/* Payment Recording Modal */}
+      {paymentModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50" onClick={() => setPaymentModal(null)}>
+          <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 max-w-md w-full shadow-xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-primary-100 dark:bg-primary-950 flex items-center justify-center">
+                  <CreditCard className="w-4 h-4 text-primary-600" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-gray-900 dark:text-white">Record Payment</h3>
+                  <p className="text-xs text-gray-500">{paymentModal.invoice_number}</p>
+                </div>
+              </div>
+              <button onClick={() => setPaymentModal(null)} className="text-gray-400 hover:text-gray-600" aria-label="Close payment modal"><X className="w-5 h-5" /></button>
+            </div>
+
+            {/* Progress Bar */}
+            <div className="mb-5">
+              <div className="flex justify-between text-xs mb-1.5">
+                <span className="text-gray-500">Paid: {formatCurrency((paymentModal as any).paid_amount || 0)}</span>
+                <span className="text-gray-500">Total: {formatCurrency(paymentModal.total)}</span>
+              </div>
+              <div className="h-2.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-green-500 to-green-400 rounded-full transition-all duration-500"
+                  style={{ width: `${Math.min(100, (((paymentModal as any).paid_amount || 0) / paymentModal.total) * 100)}%` }}
+                />
+              </div>
+              <p className="text-xs text-gray-400 mt-1">
+                Remaining: {formatCurrency(paymentModal.total - ((paymentModal as any).paid_amount || 0))}
+              </p>
+            </div>
+
+            {/* Payment Form */}
+            <div className="space-y-3 mb-5">
+              <div>
+                <label className="text-xs font-medium text-gray-500 uppercase mb-1 block">Amount *</label>
+                <input type="number" min="0" step="0.01" value={paymentForm.amount}
+                  onChange={e => setPaymentForm({ ...paymentForm, amount: e.target.value })}
+                  placeholder={`Max: ${(paymentModal.total - ((paymentModal as any).paid_amount || 0)).toFixed(2)}`}
+                  className={inputClass} />
+              </div>
+              <div>
+                <label className="text-xs font-medium text-gray-500 uppercase mb-1 block">Method</label>
+                <select value={paymentForm.method} onChange={e => setPaymentForm({ ...paymentForm, method: e.target.value })}
+                  className={inputClass} title="Payment method" aria-label="Payment method">
+                  <option value="cash">💵 Cash</option>
+                  <option value="bank_transfer">🏦 Bank Transfer</option>
+                  <option value="upi">📱 UPI</option>
+                  <option value="card">💳 Card</option>
+                  <option value="cheque">📝 Cheque</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-xs font-medium text-gray-500 uppercase mb-1 block">Reference # (optional)</label>
+                <input type="text" value={paymentForm.reference}
+                  onChange={e => setPaymentForm({ ...paymentForm, reference: e.target.value })}
+                  placeholder="Transaction ID, cheque #, etc."
+                  className={inputClass} />
+              </div>
+              <div>
+                <label className="text-xs font-medium text-gray-500 uppercase mb-1 block">Notes (optional)</label>
+                <input type="text" value={paymentForm.notes}
+                  onChange={e => setPaymentForm({ ...paymentForm, notes: e.target.value })}
+                  placeholder="Any notes about this payment"
+                  className={inputClass} />
+              </div>
+            </div>
+
+            <button onClick={handleRecordPayment} disabled={savingPayment || !paymentForm.amount}
+              className="w-full py-2.5 bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 disabled:opacity-50 transition-colors mb-4">
+              {savingPayment ? 'Recording…' : `Record ₹${paymentForm.amount ? parseFloat(paymentForm.amount).toLocaleString('en-IN') : '0'} Payment`}
+            </button>
+
+            {/* Payment History */}
+            {paymentHistory.length > 0 && (
+              <div>
+                <h4 className="text-xs font-semibold text-gray-500 uppercase mb-2">Payment History</h4>
+                <div className="space-y-2 max-h-40 overflow-y-auto">
+                  {paymentHistory.map(p => (
+                    <div key={p.id} className="flex items-center justify-between p-2.5 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                      <div>
+                        <p className="text-sm font-medium text-gray-900 dark:text-white">
+                          {formatCurrency(p.amount)}
+                          <span className="ml-2 text-xs text-gray-400">{p.method.replace('_', ' ')}</span>
+                        </p>
+                        {p.reference && <p className="text-xs text-gray-400">Ref: {p.reference}</p>}
+                      </div>
+                      <p className="text-xs text-gray-400">{formatDate(p.created_at)}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       )}
     </div>
   );

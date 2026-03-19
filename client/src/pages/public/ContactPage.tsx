@@ -68,7 +68,7 @@ export default function ContactPage() {
             </div>
 
             <a
-              href={`https://wa.me/${WHATSAPP_NUMBER}?text=Hi, I need help with your products.`}
+              href={`https://wa.me/${whatsapp}?text=Hi, I need help with your products.`}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-2 w-full py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-xl transition-colors"

@@ -107,7 +107,7 @@ export default function AboutPage() {
               <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">What Sets Us Apart</h2>
             </div>
           </ScrollReveal>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
             {[
               { icon: Users, title: 'Customer First', desc: "Every decision we make starts with our customers' needs." },
               { icon: Award, title: 'Quality Assured', desc: 'Rigorous testing and quality checks on every product.' },
@@ -115,12 +115,12 @@ export default function AboutPage() {
               { icon: HeadphonesIcon, title: 'Dedicated Support', desc: 'Local support team for setup, training, and troubleshooting.' },
             ].map((item, i) => (
               <ScrollReveal key={i} delay={i * 0.1}>
-                <div className="text-center p-6 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover-lift">
-                  <div className="w-12 h-12 bg-primary-100 dark:bg-primary-950 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <div className="text-center p-4 sm:p-6 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 hover:shadow-lg transition-shadow h-full">
+                  <div className="w-12 h-12 bg-primary-50 dark:bg-primary-950 rounded-xl flex items-center justify-center mx-auto mb-4">
                     <item.icon className="w-6 h-6 text-primary-600" />
                   </div>
-                  <h3 className="font-semibold text-gray-900 dark:text-white mb-2">{item.title}</h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">{item.desc}</p>
+                  <h3 className="font-bold text-gray-900 dark:text-white mb-2 text-sm sm:text-base">{item.title}</h3>
+                  <p className="text-[10px] sm:text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{item.desc}</p>
                 </div>
               </ScrollReveal>
             ))}

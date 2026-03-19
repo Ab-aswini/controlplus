@@ -27,14 +27,14 @@ export default function BlogPage() {
       </div>
 
       {loading ? (
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[...Array(3)].map((_, i) => (
-            <div key={i} className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden animate-pulse">
-              <div className="h-48 bg-gray-200 dark:bg-gray-800" />
-              <div className="p-5 space-y-3">
-                <div className="h-5 bg-gray-200 dark:bg-gray-800 rounded w-3/4" />
-                <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-full" />
-                <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-1/2" />
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden animate-pulse shadow-sm">
+              <div className="h-32 sm:h-48 bg-gray-200 dark:bg-gray-800" />
+              <div className="p-3 sm:p-5 space-y-3">
+                <div className="h-4 sm:h-5 bg-gray-200 dark:bg-gray-800 rounded w-3/4" />
+                <div className="h-3 sm:h-4 bg-gray-200 dark:bg-gray-800 rounded w-full" />
+                <div className="h-3 sm:h-4 bg-gray-200 dark:bg-gray-800 rounded w-1/2" />
               </div>
             </div>
           ))}
@@ -46,32 +46,32 @@ export default function BlogPage() {
           <p className="text-gray-500 dark:text-gray-400">Check back soon for new content!</p>
         </div>
       ) : (
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
           {posts.map((post, i) => (
             <ScrollReveal key={post.id} delay={i * 0.1}>
               <Link
                 to={`/blog/${post.slug}`}
-                className="block bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden hover:shadow-lg transition-shadow group"
+                className="block bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden hover:shadow-lg hover:border-gray-200 dark:hover:border-gray-700 transition-all duration-300 group shadow-sm hover:-translate-y-1"
               >
                 {post.cover_image ? (
-                  <div className="h-48 overflow-hidden">
+                  <div className="h-32 sm:h-48 overflow-hidden">
                     <img src={post.cover_image} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                   </div>
                 ) : (
-                  <div className="h-48 bg-gradient-to-br from-primary-100 to-primary-200 dark:from-primary-950 dark:to-gray-800 flex items-center justify-center">
-                    <FileText className="w-12 h-12 text-primary-400" />
+                  <div className="h-32 sm:h-48 bg-gradient-to-br from-primary-50 to-primary-100 dark:from-primary-950 dark:to-gray-800 flex items-center justify-center">
+                    <FileText className="w-8 h-8 sm:w-12 sm:h-12 text-primary-400" />
                   </div>
                 )}
-                <div className="p-5">
-                  <h3 className="font-semibold text-gray-900 dark:text-white mb-2 group-hover:text-primary-600 transition-colors line-clamp-2">
+                <div className="p-3 sm:p-5">
+                  <h3 className="font-bold text-gray-900 dark:text-white mb-1 sm:mb-2 group-hover:text-primary-600 transition-colors line-clamp-2 text-sm sm:text-base">
                     {post.title}
                   </h3>
                   {post.excerpt && (
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-3 line-clamp-2">{post.excerpt}</p>
+                    <p className="text-[10px] sm:text-sm text-gray-500 dark:text-gray-400 mb-2 sm:mb-3 line-clamp-2">{post.excerpt}</p>
                   )}
-                  <div className="flex items-center gap-4 text-xs text-gray-400">
-                    <span className="flex items-center gap-1"><User className="w-3.5 h-3.5" /> {post.author}</span>
-                    <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5" /> {formatDate(post.created_at)}</span>
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-[9px] sm:text-xs text-gray-400">
+                    <span className="flex items-center gap-1"><User className="w-3 sm:w-3.5 h-3 sm:h-3.5" /> {post.author}</span>
+                    <span className="flex items-center gap-1"><Calendar className="w-3 sm:w-3.5 h-3 sm:h-3.5" /> {formatDate(post.created_at)}</span>
                   </div>
                 </div>
               </Link>

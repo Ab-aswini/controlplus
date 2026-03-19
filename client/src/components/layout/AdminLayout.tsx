@@ -1,5 +1,5 @@
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Package, MessageSquare, ShoppingCart, FileText, Users, LogOut, Menu, X, Settings, Receipt, Handshake, MessageCircle } from 'lucide-react';
+import { LayoutDashboard, Package, MessageSquare, ShoppingCart, FileText, Users, LogOut, Menu, X, Settings, Receipt, Handshake, MessageCircle, Briefcase } from 'lucide-react';
 import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { cn } from '../../utils/cn';
@@ -14,6 +14,7 @@ const ADMIN_LINKS = [
   { label: 'Blog', path: '/admin/blog', icon: FileText },
   { label: 'Partners', path: '/admin/partners', icon: Handshake },
   { label: 'Testimonials', path: '/admin/testimonials', icon: MessageCircle },
+  { label: 'Services', path: '/admin/services', icon: Briefcase },
   { label: 'Users', path: '/admin/users', icon: Users },
   { label: 'Settings', path: '/admin/settings', icon: Settings },
 ];

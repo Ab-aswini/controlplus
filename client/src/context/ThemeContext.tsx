@@ -12,7 +12,7 @@ const ThemeContext = createContext<ThemeContextType | null>(null);
 function getInitialTheme(): Theme {
   const saved = localStorage.getItem('controlplus_theme') as Theme;
   if (saved) return saved;
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  return 'light'; // Forced light mode by default
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {

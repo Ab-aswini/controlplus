@@ -15,13 +15,17 @@ export interface InquiryStatusBreakdown {
 }
 
 export const getStats = async (): Promise<Stats> => {
-  const [products, inquiries, newInquiries, orders, pendingOrders, blogPosts] = await Promise.all([
+  const [products, inquiries, newInquiries, orders, pendingOrders, blogPosts, services, partners, testimonials, invoices] = await Promise.all([
     supabase.from('products').select('id', { count: 'exact', head: true }),
     supabase.from('inquiries').select('id', { count: 'exact', head: true }),
     supabase.from('inquiries').select('id', { count: 'exact', head: true }).eq('status', 'new'),
     supabase.from('orders').select('id', { count: 'exact', head: true }),
     supabase.from('orders').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
     supabase.from('blog').select('id', { count: 'exact', head: true }),
+    supabase.from('services').select('id', { count: 'exact', head: true }),
+    supabase.from('partners').select('id', { count: 'exact', head: true }),
+    supabase.from('testimonials').select('id', { count: 'exact', head: true }),
+    supabase.from('invoices').select('id', { count: 'exact', head: true }),
   ]);
 
   return {
@@ -31,6 +35,10 @@ export const getStats = async (): Promise<Stats> => {
     orders: orders.count || 0,
     pendingOrders: pendingOrders.count || 0,
     blogPosts: blogPosts.count || 0,
+    services: services.count || 0,
+    partners: partners.count || 0,
+    testimonials: testimonials.count || 0,
+    invoices: invoices.count || 0,
   };
 };
 

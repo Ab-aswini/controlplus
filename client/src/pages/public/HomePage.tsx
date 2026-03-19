@@ -146,9 +146,9 @@ export default function HomePage() {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+              className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6"
             >
-              {softwareProducts.slice(0, 3).map(product => (
+              {softwareProducts.slice(0, 4).map(product => (
                 <motion.div key={product.id} variants={staggerItem}>
                   <ProductCard product={product} />
                 </motion.div>
@@ -183,9 +183,9 @@ export default function HomePage() {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+              className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6"
             >
-              {hardwareProducts.slice(0, 3).map(product => (
+              {hardwareProducts.slice(0, 4).map(product => (
                 <motion.div key={product.id} variants={staggerItem}>
                   <ProductCard product={product} />
                 </motion.div>
@@ -219,7 +219,7 @@ export default function HomePage() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
-            className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6"
+            className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6"
           >
             {[
               { icon: IndianRupee, title: 'Affordable Pricing', desc: 'Solutions that fit your budget. No hidden costs.' },
@@ -233,12 +233,12 @@ export default function HomePage() {
                 whileHover={{ y: -6, scale: 1.02 }}
                 transition={{ type: 'spring', stiffness: 300, damping: 20 }}
               >
-                <div className="text-center p-6 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 hover:shadow-lg transition-shadow h-full">
+                <div className="text-center p-3 sm:p-6 rounded-2xl bg-gray-50/50 dark:bg-gray-900 border border-gray-200/60 dark:border-gray-800 hover:shadow-lg transition-shadow h-full">
                   <div className="w-14 h-14 bg-primary-100 dark:bg-primary-950 rounded-xl flex items-center justify-center mx-auto mb-4">
                     <item.icon className="w-7 h-7 text-primary-600" />
                   </div>
-                  <h3 className="font-bold text-gray-900 dark:text-white mb-2">{item.title}</h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">{item.desc}</p>
+                  <h3 className="font-bold text-gray-900 dark:text-white mb-2 text-sm sm:text-base">{item.title}</h3>
+                  <p className="text-[10px] sm:text-sm text-gray-500 dark:text-gray-400">{item.desc}</p>
                 </div>
               </motion.div>
             ))}

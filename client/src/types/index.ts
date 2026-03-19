@@ -49,13 +49,40 @@ export interface Order {
   id: string;
   customer_name: string;
   customer_phone: string | null;
+  customer_email: string | null;
+  customer_address: string | null;
   product_id: string | null;
   product_name: string | null;
   quantity: number;
   total_amount: number | null;
   status: 'pending' | 'confirmed' | 'delivered' | 'cancelled';
   notes: string | null;
+  invoice_id: string | null;
   created_at: string;
+  // Joined fields
+  item_count?: number;
+  order_items?: OrderItem[];
+  invoice_number?: string;
+}
+
+export interface OrderItem {
+  id: string;
+  order_id: string;
+  product_id: string | null;
+  product_name: string;
+  quantity: number;
+  unit_price: number;
+  total: number;
+  created_at: string;
+}
+
+export interface CartItem {
+  product_id: string;
+  name: string;
+  slug: string;
+  price: number;
+  qty: number;
+  image_url: string | null;
 }
 
 export interface BlogPost {
@@ -85,6 +112,10 @@ export interface Stats {
   orders: number;
   pendingOrders: number;
   blogPosts: number;
+  services: number;
+  partners: number;
+  testimonials: number;
+  invoices: number;
 }
 
 export interface FollowUp {
@@ -96,4 +127,17 @@ export interface FollowUp {
   next_follow_up: string | null;
   completed: boolean;
   created_at: string;
+}
+
+export interface Service {
+  id: string;
+  title: string;
+  description: string | null;
+  type: 'software' | 'hardware' | 'support';
+  features: string[];
+  product_link: string | null;
+  sort_order: number;
+  published: boolean;
+  created_at: string;
+  updated_at: string;
 }
