@@ -1,25 +1,29 @@
 import { useEffect, useState } from 'react';
-import { Plus, Edit2, Trash2, X, Eye, EyeOff } from 'lucide-react';
+import { Plus, Edit2, Trash2, X, Eye, EyeOff, Upload, Image as ImageIcon } from 'lucide-react';
 import { BlogPost } from '../../types';
 import { getPosts, createPost, updatePost, deletePost } from '../../api/blog';
+import { supabase } from '../../lib/supabase';
 import { formatDate } from '../../utils/formatDate';
+import { toast } from 'sonner';
 
 interface BlogFormData {
   title: string;
   content: string;
   excerpt: string;
+  cover_image: string;
   published: boolean;
 }
 
-const emptyForm: BlogFormData = { title: '', content: '', excerpt: '', published: false };
+const emptyForm: BlogFormData = { title: '', content: '', excerpt: '', cover_image: '', published: false };
 
 export default function BlogManagePage() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [editId, setEditId] = useState<number | null>(null);
+  const [editId, setEditId] = useState<string | null>(null);
   const [form, setForm] = useState<BlogFormData>(emptyForm);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   const load = () => {
     setLoading(true);
@@ -31,38 +35,58 @@ export default function BlogManagePage() {
   const openCreate = () => { setForm(emptyForm); setEditId(null); setShowForm(true); };
 
   const openEdit = (p: BlogPost) => {
-    setForm({ title: p.title, content: p.content, excerpt: p.excerpt || '', published: !!p.published });
+    setForm({ title: p.title, content: p.content, excerpt: p.excerpt || '', cover_image: p.cover_image || '', published: !!p.published });
     setEditId(p.id);
     setShowForm(true);
+  };
+
+  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const ext = file.name.split('.').pop();
+      const path = `covers/${crypto.randomUUID()}.${ext}`;
+      const { error: uploadError } = await supabase.storage.from('blog-images').upload(path, file);
+      if (uploadError) throw uploadError;
+      const { data: { publicUrl } } = supabase.storage.from('blog-images').getPublicUrl(path);
+      setForm(prev => ({ ...prev, cover_image: publicUrl }));
+      toast.success('Cover image uploaded');
+    } catch (err: any) {
+      toast.error(err.message || 'Upload failed');
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
     try {
-      const payload = { ...form, published: form.published ? 1 : 0 };
       if (editId) {
-        await updatePost(editId, payload);
+        await updatePost(editId, form);
       } else {
-        await createPost(payload);
+        await createPost(form);
       }
       setShowForm(false);
+      toast.success(editId ? 'Post updated' : 'Post created');
       load();
     } catch (err: any) {
-      alert(err.response?.data?.error || 'Failed to save');
+      toast.error(err?.message || 'Failed to save post');
     } finally { setSaving(false); }
   };
 
   const togglePublished = async (p: BlogPost) => {
     try {
       await updatePost(p.id, { published: !p.published } as any);
+      toast.success(p.published ? 'Post unpublished' : 'Post published');
       load();
-    } catch { alert('Failed to update'); }
+    } catch { toast.error('Failed to update'); }
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     if (!confirm('Delete this post?')) return;
-    try { await deletePost(id); load(); } catch { alert('Failed to delete'); }
+    try { await deletePost(id); toast.success('Post deleted'); load(); } catch { toast.error('Failed to delete'); }
   };
 
   return (
@@ -108,10 +132,10 @@ export default function BlogManagePage() {
                   <td className="px-4 py-3 text-gray-400 text-xs">{formatDate(p.created_at)}</td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-1">
-                      <button onClick={() => openEdit(p)} className="p-1.5 text-gray-400 hover:text-primary-600 transition-colors">
+                      <button onClick={() => openEdit(p)} className="p-1.5 text-gray-400 hover:text-primary-600 transition-colors" title="Edit Post" aria-label="Edit Post">
                         <Edit2 className="w-4 h-4" />
                       </button>
-                      <button onClick={() => handleDelete(p.id)} className="p-1.5 text-gray-400 hover:text-red-600 transition-colors">
+                      <button onClick={() => handleDelete(p.id)} className="p-1.5 text-gray-400 hover:text-red-600 transition-colors" title="Delete Post" aria-label="Delete Post">
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
@@ -125,7 +149,7 @@ export default function BlogManagePage() {
 
       {/* Form Modal */}
       {showForm && (
-        <div className="fixed inset-0 z-50 flex items-start justify-center p-4 bg-black/50 overflow-y-auto" onClick={() => setShowForm(false)}>
+        <div className="fixed inset-0 z-[100] flex items-start justify-center p-4 bg-black/50 overflow-y-auto" onClick={() => setShowForm(false)} aria-hidden="true">
           <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 max-w-2xl w-full mt-16 mb-8 shadow-xl" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-bold text-gray-900 dark:text-white">{editId ? 'Edit Post' : 'New Post'}</h3>
@@ -136,6 +160,28 @@ export default function BlogManagePage() {
                 className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-primary-500 text-lg font-medium" />
               <input type="text" placeholder="Excerpt (short summary)" value={form.excerpt} onChange={e => setForm({ ...form, excerpt: e.target.value })}
                 className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-primary-500" />
+
+              {/* Cover Image */}
+              <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 space-y-2">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-2"><ImageIcon className="w-4 h-4" /> Cover Image</h4>
+                  <label className="inline-flex items-center gap-1 px-3 py-1.5 bg-primary-50 text-primary-600 text-xs font-medium rounded-lg cursor-pointer hover:bg-primary-100">
+                    <Upload className="w-3 h-3" />{uploading ? 'Uploading…' : 'Upload'}
+                    <input type="file" accept="image/*" className="hidden" onChange={handleCoverUpload} disabled={uploading} />
+                  </label>
+                </div>
+                {form.cover_image ? (
+                  <div className="relative">
+                    <img src={form.cover_image} alt="Cover" className="w-full h-32 object-cover rounded-lg" />
+                    <button type="button" onClick={() => setForm({ ...form, cover_image: '' })} className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full" aria-label="Remove cover image" title="Remove cover image">
+                      <Trash2 className="w-3 h-3" />
+                    </button>
+                  </div>
+                ) : (
+                  <p className="text-xs text-gray-400">No cover image. Upload one to display with the post.</p>
+                )}
+              </div>
+
               <textarea placeholder="Content (supports markdown-style ## headings and - lists)" required rows={12} value={form.content} onChange={e => setForm({ ...form, content: e.target.value })}
                 className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-primary-500 resize-none font-mono text-sm" />
               <label className="flex items-center gap-2 cursor-pointer">

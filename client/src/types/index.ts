@@ -1,5 +1,5 @@
 export interface User {
-  id: number;
+  id: string;
   name: string;
   email: string;
   role: 'admin' | 'staff';
@@ -7,7 +7,7 @@ export interface User {
 }
 
 export interface Product {
-  id: number;
+  id: string;
   name: string;
   slug: string;
   category: string;
@@ -16,28 +16,28 @@ export interface Product {
   short_description: string | null;
   price: number | null;
   condition: 'new' | 'refurbished' | null;
-  stock_status: 'in_stock' | 'out_of_stock';
+  stock_status: 'in_stock' | 'out_of_stock' | 'limited';
   warranty_info: string | null;
   specs: Record<string, string> | null;
-  featured: number;
+  featured: boolean;
   images: ProductImage[];
   created_at: string;
   updated_at: string;
 }
 
 export interface ProductImage {
-  id: number;
-  product_id: number;
+  id: string;
+  product_id: string;
   image_url: string;
-  is_primary: number;
+  is_primary: boolean;
 }
 
 export interface Inquiry {
-  id: number;
+  id: string;
   name: string;
   phone: string;
   email: string | null;
-  product_id: number | null;
+  product_id: string | null;
   product_name?: string;
   message: string | null;
   source: string;
@@ -46,10 +46,10 @@ export interface Inquiry {
 }
 
 export interface Order {
-  id: number;
+  id: string;
   customer_name: string;
   customer_phone: string | null;
-  product_id: number | null;
+  product_id: string | null;
   product_name: string | null;
   quantity: number;
   total_amount: number | null;
@@ -59,19 +59,20 @@ export interface Order {
 }
 
 export interface BlogPost {
-  id: number;
+  id: string;
   title: string;
   slug: string;
   content: string;
   excerpt: string | null;
+  cover_image: string | null;
   author: string;
-  published: number;
+  published: boolean;
   created_at: string;
   updated_at: string;
 }
 
 export interface FAQ {
-  id: number;
+  id: string;
   question: string;
   answer: string;
   sort_order: number;
@@ -84,4 +85,15 @@ export interface Stats {
   orders: number;
   pendingOrders: number;
   blogPosts: number;
+}
+
+export interface FollowUp {
+  id: string;
+  inquiry_id: string;
+  user_id: string | null;
+  type: 'call' | 'email' | 'whatsapp' | 'meeting' | 'note';
+  summary: string;
+  next_follow_up: string | null;
+  completed: boolean;
+  created_at: string;
 }

@@ -53,9 +53,15 @@ export default function BlogPage() {
                 to={`/blog/${post.slug}`}
                 className="block bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden hover:shadow-lg transition-shadow group"
               >
-                <div className="h-48 bg-gradient-to-br from-primary-100 to-primary-200 dark:from-primary-950 dark:to-gray-800 flex items-center justify-center">
-                  <FileText className="w-12 h-12 text-primary-400" />
-                </div>
+                {post.cover_image ? (
+                  <div className="h-48 overflow-hidden">
+                    <img src={post.cover_image} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                  </div>
+                ) : (
+                  <div className="h-48 bg-gradient-to-br from-primary-100 to-primary-200 dark:from-primary-950 dark:to-gray-800 flex items-center justify-center">
+                    <FileText className="w-12 h-12 text-primary-400" />
+                  </div>
+                )}
                 <div className="p-5">
                   <h3 className="font-semibold text-gray-900 dark:text-white mb-2 group-hover:text-primary-600 transition-colors line-clamp-2">
                     {post.title}

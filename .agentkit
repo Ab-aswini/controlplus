@@ -1,0 +1,19 @@
+{
+    "version": "3.6.3",
+    "store": "C:/Users/aswin/.agent-os/projects/274d0bec3d3c",
+    "paths": {
+        "agents": "C:/Users/aswin/.agent-os/projects/274d0bec3d3c/.agent-os/agents",
+        "rules": "C:/Users/aswin/.agent-os/projects/274d0bec3d3c/.agent-os/rules",
+        "skills": "C:/Users/aswin/.agent-os/projects/274d0bec3d3c/.agent-os/skills",
+        "config": "C:/Users/aswin/.agent-os/projects/274d0bec3d3c/.agent-os/config",
+        "templates": "C:/Users/aswin/.agent-os/projects/274d0bec3d3c/.agent-os/templates",
+        "workflows": "C:/Users/aswin/.agent-os/projects/274d0bec3d3c/.agent-os/workflows",
+        "shared": "C:/Users/aswin/.agent-os/projects/274d0bec3d3c/.agent-os/.shared",
+        "logs": "C:/Users/aswin/.agent-os/projects/274d0bec3d3c/.agent-os/logs",
+        "memory": "C:/Users/aswin/.agent-os/projects/274d0bec3d3c/memory",
+        "docs": "C:/Users/aswin/.agent-os/projects/274d0bec3d3c/docs",
+        "scripts": "C:/Users/aswin/.agent-os/projects/274d0bec3d3c/scripts"
+    },
+    "project": "D:/march-10/ControlPlus",
+    "created": "2026-03-19T08:58:22.051Z"
+}

@@ -2,18 +2,12 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "ControlPlus Server (Express + SQLite)",
-      "runtimeExecutable": "node",
-      "runtimeArgs": ["node_modules/ts-node-dev/lib/bin.js", "--respawn", "--transpile-only", "src/index.ts"],
-      "port": 5000,
-      "cwd": "server"
-    },
-    {
-      "name": "ControlPlus Client (Vite + React)",
-      "runtimeExecutable": "node",
+      "name": "ControlPlus Dev",
+      "runtimeExecutable": "C:/Program Files/nodejs/node.exe",
       "runtimeArgs": ["node_modules/vite/bin/vite.js"],
       "port": 5173,
-      "cwd": "client"
+      "cwd": "client",
+      "autoPort": true
     }
   ]
 }

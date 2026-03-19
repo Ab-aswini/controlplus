@@ -1,20 +1,21 @@
 import { Link } from 'react-router-dom';
-import { Monitor, Phone, Mail, MapPin } from 'lucide-react';
+import { Phone, Mail, MapPin } from 'lucide-react';
+import { useSettings } from '../../context/SettingsContext';
 import { COMPANY_PHONE, COMPANY_EMAIL, COMPANY_ADDRESS } from '../../utils/constants';
+import Logo from '../ui/Logo';
 
 export default function Footer() {
+  const { settings } = useSettings();
+  const phone = settings?.contact_info?.phone || COMPANY_PHONE;
+  const email = settings?.contact_info?.email || COMPANY_EMAIL;
+  const address = settings?.contact_info?.address || COMPANY_ADDRESS;
   return (
     <footer className="bg-gray-900 dark:bg-gray-950 text-gray-400 border-t border-gray-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="md:col-span-1">
-            <Link to="/" className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
-                <Monitor className="w-5 h-5 text-white" />
-              </div>
-              <span className="text-xl font-bold text-white">
-                Control<span className="text-primary-400">Plus</span>
-              </span>
+            <Link to="/" className="flex items-center mb-4">
+              <Logo dark />
             </Link>
             <p className="text-sm leading-relaxed">
               Your trusted partner for business software solutions and quality hardware. Empowering small businesses across India.
@@ -48,15 +49,15 @@ export default function Footer() {
             <ul className="space-y-3 text-sm">
               <li className="flex items-start gap-2">
                 <Phone className="w-4 h-4 mt-0.5 shrink-0" />
-                <span>{COMPANY_PHONE}</span>
+                <span>{phone}</span>
               </li>
               <li className="flex items-start gap-2">
                 <Mail className="w-4 h-4 mt-0.5 shrink-0" />
-                <span>{COMPANY_EMAIL}</span>
+                <span>{email}</span>
               </li>
               <li className="flex items-start gap-2">
                 <MapPin className="w-4 h-4 mt-0.5 shrink-0" />
-                <span>{COMPANY_ADDRESS}</span>
+                <span>{address}</span>
               </li>
             </ul>
           </div>

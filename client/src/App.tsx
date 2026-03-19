@@ -1,7 +1,10 @@
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { SettingsProvider } from './context/SettingsContext';
+import { Toaster } from 'sonner';
 
+import ProgressBar from './components/shared/ProgressBar';
 import PublicLayout from './components/layout/PublicLayout';
 import AdminLayout from './components/layout/AdminLayout';
 
@@ -20,6 +23,11 @@ import ProductsManagePage from './pages/admin/ProductsManagePage';
 import InquiriesPage from './pages/admin/InquiriesPage';
 import OrdersPage from './pages/admin/OrdersPage';
 import BlogManagePage from './pages/admin/BlogManagePage';
+import UsersManagePage from './pages/admin/UsersManagePage';
+import SettingsPage from './pages/admin/SettingsPage';
+import InvoicesPage from './pages/admin/InvoicesPage';
+import PartnersManagePage from './pages/admin/PartnersManagePage';
+import TestimonialsManagePage from './pages/admin/TestimonialsManagePage';
 
 function ProtectedRoute() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -46,8 +54,10 @@ function NotFound() {
 export default function App() {
   return (
     <ThemeProvider>
+      <SettingsProvider>
       <AuthProvider>
         <BrowserRouter>
+          <ProgressBar />
           <Routes>
             {/* Public */}
             <Route element={<PublicLayout />}>
@@ -73,11 +83,18 @@ export default function App() {
                 <Route path="/admin/inquiries" element={<InquiriesPage />} />
                 <Route path="/admin/orders" element={<OrdersPage />} />
                 <Route path="/admin/blog" element={<BlogManagePage />} />
+                <Route path="/admin/users" element={<UsersManagePage />} />
+                <Route path="/admin/settings" element={<SettingsPage />} />
+                <Route path="/admin/invoices" element={<InvoicesPage />} />
+                <Route path="/admin/partners" element={<PartnersManagePage />} />
+                <Route path="/admin/testimonials" element={<TestimonialsManagePage />} />
               </Route>
             </Route>
           </Routes>
+          <Toaster position="top-right" richColors closeButton />
         </BrowserRouter>
       </AuthProvider>
+      </SettingsProvider>
     </ThemeProvider>
   );
 }

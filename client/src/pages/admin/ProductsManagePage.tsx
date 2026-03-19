@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Plus, Edit2, Trash2, X } from 'lucide-react';
+import { Plus, Edit2, Trash2, X, Upload, Image as ImageIcon } from 'lucide-react';
 import { Product } from '../../types';
 import { getProducts, createProduct, updateProduct, deleteProduct } from '../../api/products';
+import { supabase } from '../../lib/supabase';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { cn } from '../../utils/cn';
+import Skeleton from '../../components/ui/Skeleton';
+import { toast } from 'sonner';
 
 interface ProductFormData {
   name: string;
@@ -28,9 +31,11 @@ export default function ProductsManagePage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [editId, setEditId] = useState<number | null>(null);
+  const [editId, setEditId] = useState<string | null>(null);
   const [form, setForm] = useState<ProductFormData>(emptyForm);
   const [saving, setSaving] = useState(false);
+  const [productImages, setProductImages] = useState<{id: string; image_url: string}[]>([]);
+  const [uploading, setUploading] = useState(false);
 
   const load = () => {
     setLoading(true);
@@ -39,7 +44,7 @@ export default function ProductsManagePage() {
 
   useEffect(() => { load(); }, []);
 
-  const openCreate = () => { setForm(emptyForm); setEditId(null); setShowForm(true); };
+  const openCreate = () => { setForm(emptyForm); setEditId(null); setProductImages([]); setShowForm(true); };
 
   const openEdit = (p: Product) => {
     setForm({
@@ -51,6 +56,40 @@ export default function ProductsManagePage() {
     });
     setEditId(p.id);
     setShowForm(true);
+    // Load existing images
+    loadProductImages(p.id);
+  };
+
+  const loadProductImages = async (productId: string) => {
+    const { data } = await supabase.from('product_images').select('id, image_url').eq('product_id', productId);
+    setProductImages((data || []).map(img => ({ id: img.id, image_url: img.image_url })));
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, productId: string) => {
+    const files = e.target.files;
+    if (!files?.length) return;
+    setUploading(true);
+    try {
+      for (const file of Array.from(files)) {
+        const ext = file.name.split('.').pop();
+        const path = `${productId}/${crypto.randomUUID()}.${ext}`;
+        const { error: uploadError } = await supabase.storage.from('product-images').upload(path, file);
+        if (uploadError) throw uploadError;
+        const { data: { publicUrl } } = supabase.storage.from('product-images').getPublicUrl(path);
+        await supabase.from('product_images').insert({ product_id: productId, image_url: publicUrl });
+      }
+      await loadProductImages(productId);
+      toast.success('Images uploaded');
+    } catch (err: any) {
+      toast.error(err.message || 'Upload failed');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const deleteImage = async (imageId: string) => {
+    await supabase.from('product_images').delete().eq('id', imageId);
+    setProductImages(prev => prev.filter(img => img.id !== imageId));
   };
 
   const handleSave = async (e: React.FormEvent) => {
@@ -71,20 +110,22 @@ export default function ProductsManagePage() {
       }
       setShowForm(false);
       load();
+      toast.success(editId ? 'Product updated' : 'Product created');
     } catch (err: any) {
-      alert(err.response?.data?.error || 'Failed to save');
+      toast.error(err?.message || 'Failed to save product');
     } finally {
       setSaving(false);
     }
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     if (!confirm('Delete this product?')) return;
     try {
       await deleteProduct(id);
+      toast.success('Product deleted');
       load();
     } catch {
-      alert('Failed to delete');
+      toast.error('Failed to delete product');
     }
   };
 
@@ -113,13 +154,13 @@ export default function ProductsManagePage() {
             <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
               {loading ? (
                 [...Array(5)].map((_, i) => (
-                  <tr key={i} className="animate-pulse">
-                    <td className="px-4 py-3"><div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-32" /></td>
-                    <td className="px-4 py-3"><div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-16" /></td>
-                    <td className="px-4 py-3"><div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-20" /></td>
-                    <td className="px-4 py-3"><div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-16" /></td>
-                    <td className="px-4 py-3"><div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-16" /></td>
-                    <td className="px-4 py-3"><div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-16" /></td>
+                  <tr key={i}>
+                    <td className="px-4 py-3"><Skeleton className="h-4 w-32" /></td>
+                    <td className="px-4 py-3"><Skeleton className="h-4 w-16" /></td>
+                    <td className="px-4 py-3"><Skeleton className="h-4 w-20" /></td>
+                    <td className="px-4 py-3"><Skeleton className="h-4 w-16" /></td>
+                    <td className="px-4 py-3"><Skeleton className="h-4 w-16" /></td>
+                    <td className="px-4 py-3"><Skeleton className="h-4 w-16" /></td>
                   </tr>
                 ))
               ) : products.map(p => (
@@ -142,10 +183,10 @@ export default function ProductsManagePage() {
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-1">
-                      <button onClick={() => openEdit(p)} className="p-1.5 text-gray-400 hover:text-primary-600 transition-colors">
+                      <button onClick={() => openEdit(p)} className="p-1.5 text-gray-400 hover:text-primary-600 transition-colors" aria-label="Edit Product" title="Edit Product">
                         <Edit2 className="w-4 h-4" />
                       </button>
-                      <button onClick={() => handleDelete(p.id)} className="p-1.5 text-gray-400 hover:text-red-600 transition-colors">
+                      <button onClick={() => handleDelete(p.id)} className="p-1.5 text-gray-400 hover:text-red-600 transition-colors" aria-label="Delete Product" title="Delete Product">
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
@@ -159,18 +200,19 @@ export default function ProductsManagePage() {
 
       {/* Form Modal */}
       {showForm && (
-        <div className="fixed inset-0 z-50 flex items-start justify-center p-4 bg-black/50 overflow-y-auto" onClick={() => setShowForm(false)}>
+        <div className="fixed inset-0 z-[100] flex items-start justify-center p-4 bg-black/50 overflow-y-auto" onClick={() => setShowForm(false)} aria-hidden="true">
           <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 max-w-lg w-full mt-16 mb-8 shadow-xl" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-bold text-gray-900 dark:text-white">{editId ? 'Edit Product' : 'Add Product'}</h3>
-              <button onClick={() => setShowForm(false)} className="text-gray-400 hover:text-gray-600"><X className="w-5 h-5" /></button>
+              <button onClick={() => setShowForm(false)} className="text-gray-400 hover:text-gray-600" aria-label="Close form" title="Close form"><X className="w-5 h-5" /></button>
             </div>
             <form onSubmit={handleSave} className="space-y-4">
               <input type="text" placeholder="Product Name *" required value={form.name} onChange={e => setForm({ ...form, name: e.target.value })}
                 className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-primary-500" />
               <div className="grid grid-cols-2 gap-4">
                 <select value={form.type} onChange={e => setForm({ ...form, type: e.target.value as any })}
-                  className="px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none">
+                  className="px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none"
+                  aria-label="Product Type" title="Product Type">
                   <option value="software">Software</option>
                   <option value="hardware">Hardware</option>
                 </select>
@@ -185,7 +227,8 @@ export default function ProductsManagePage() {
                 <input type="number" placeholder="Price (INR)" value={form.price} onChange={e => setForm({ ...form, price: e.target.value })}
                   className="px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-primary-500" />
                 <select value={form.condition} onChange={e => setForm({ ...form, condition: e.target.value })}
-                  className="px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none">
+                  className="px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none"
+                  aria-label="Product Condition" title="Product Condition">
                   <option value="">No Condition</option>
                   <option value="new">New</option>
                   <option value="refurbished">Refurbished</option>
@@ -193,7 +236,8 @@ export default function ProductsManagePage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <select value={form.stock_status} onChange={e => setForm({ ...form, stock_status: e.target.value })}
-                  className="px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none">
+                  className="px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none"
+                  aria-label="Stock Status" title="Stock Status">
                   <option value="in_stock">In Stock</option>
                   <option value="out_of_stock">Out of Stock</option>
                 </select>
@@ -207,9 +251,40 @@ export default function ProductsManagePage() {
                   className="w-4 h-4 text-primary-600 rounded border-gray-300 focus:ring-primary-500" />
                 <span className="text-sm text-gray-700 dark:text-gray-300">Featured Product</span>
               </label>
+
+              {/* Image Upload (only in edit mode, after product exists) */}
+              {editId && (
+                <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-2"><ImageIcon className="w-4 h-4" /> Product Images</h4>
+                    <label className="inline-flex items-center gap-1 px-3 py-1.5 bg-primary-50 text-primary-600 text-xs font-medium rounded-lg cursor-pointer hover:bg-primary-100">
+                      <Upload className="w-3 h-3" />{uploading ? 'Uploading…' : 'Upload'}
+                      <input type="file" accept="image/*" multiple className="hidden" onChange={e => handleImageUpload(e, editId)} disabled={uploading} />
+                    </label>
+                  </div>
+                  {productImages.length > 0 ? (
+                    <div className="grid grid-cols-3 gap-2">
+                      {productImages.map(img => (
+                        <div key={img.id} className="relative group">
+                          <img src={img.image_url} alt="" className="w-full h-20 object-cover rounded-lg" />
+                          <button onClick={() => deleteImage(img.id)} className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity" aria-label="Delete image" title="Delete image">
+                            <Trash2 className="w-3 h-3" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-xs text-gray-400">No images yet. Upload to add.</p>
+                  )}
+                </div>
+              )}
+              {!editId && (
+                <p className="text-xs text-gray-400">💡 Save the product first, then edit it to upload images.</p>
+              )}
+
               <button type="submit" disabled={saving}
                 className="w-full py-2.5 bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 disabled:opacity-50 transition-colors">
-                {saving ? 'Saving...' : editId ? 'Update Product' : 'Create Product'}
+                {saving ? 'Saving…' : editId ? 'Update Product' : 'Create Product'}
               </button>
             </form>
           </div>

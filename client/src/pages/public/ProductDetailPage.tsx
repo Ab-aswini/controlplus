@@ -1,16 +1,21 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Monitor, HardDrive, CheckCircle, XCircle, MessageSquare, X } from 'lucide-react';
+import { ArrowLeft, Monitor, HardDrive, CheckCircle, XCircle, MessageSquare, X, Mail, MessageCircle, CreditCard } from 'lucide-react';
 import { Product } from '../../types';
 import { getProduct, getProducts } from '../../api/products';
 import { submitInquiry } from '../../api/inquiries';
 import { formatCurrency } from '../../utils/formatCurrency';
+import { useSettings } from '../../context/SettingsContext';
 import ProductCard from '../../components/shared/ProductCard';
+import ProductGallery from '../../components/shared/ProductGallery';
+import Breadcrumbs from '../../components/ui/Breadcrumbs';
 import { cn } from '../../utils/cn';
+import { toast } from 'sonner';
 
 export default function ProductDetailPage() {
   const { slug } = useParams<{ slug: string }>();
+  const { settings, getChannelsForProduct } = useSettings();
   const [product, setProduct] = useState<Product | null>(null);
   const [related, setRelated] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -44,12 +49,31 @@ export default function ProductDetailPage() {
         source: 'product_page',
       });
       setSubmitted(true);
+      toast.success('Inquiry sent successfully!');
       setTimeout(() => { setShowInquiry(false); setSubmitted(false); setInquiryForm({ name: '', phone: '', email: '', message: '' }); }, 2000);
     } catch {
-      alert('Failed to submit inquiry. Please try again.');
+      toast.error('Failed to submit inquiry. Please try again.');
     } finally {
       setSubmitting(false);
     }
+  };
+
+  // Determine which channels are active for this product
+  const channels = product ? getChannelsForProduct((product as any).order_channels || null) : null;
+  const contactInfo = settings?.contact_info;
+
+  // Build CTA links
+  const getMailtoLink = () => {
+    if (!product || !contactInfo) return '#';
+    const subject = encodeURIComponent(`Inquiry: ${product.name}`);
+    const body = encodeURIComponent(`Hi,\n\nI'm interested in "${product.name}" (${formatCurrency(product.price)}).\n\nPlease share more details or payment information.\n\nThank you.`);
+    return `mailto:${contactInfo.email}?subject=${subject}&body=${body}`;
+  };
+
+  const getWhatsAppLink = () => {
+    if (!product || !contactInfo) return '#';
+    const text = encodeURIComponent(`Hi! I'm interested in *${product.name}* (${formatCurrency(product.price)}). Can you share more details or payment info?`);
+    return `https://wa.me/${contactInfo.whatsapp}?text=${text}`;
   };
 
   if (loading) {
@@ -76,27 +100,22 @@ export default function ProductDetailPage() {
     );
   }
 
-  const primaryImage = product.images?.find(i => i.is_primary) || product.images?.[0];
-
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
-      <Link to="/products" className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-primary-600 mb-6">
-        <ArrowLeft className="w-4 h-4" /> Back to Products
-      </Link>
+      <Breadcrumbs
+        items={[
+          { label: 'Products', href: '/products' },
+          { label: product.name }
+        ]}
+      />
 
-      <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
-        {/* Image */}
-        <div className="aspect-square bg-gray-100 dark:bg-gray-800 rounded-2xl flex items-center justify-center overflow-hidden">
-          {primaryImage ? (
-            <img src={primaryImage.image_url} alt={product.name} className="w-full h-full object-cover" />
-          ) : (
-            <div className="text-gray-400 dark:text-gray-600">
-              {product.type === 'software' ? <Monitor className="w-24 h-24" /> : <HardDrive className="w-24 h-24" />}
-            </div>
-          )}
-        </div>
+      <div className="grid md:grid-cols-2 gap-8 lg:gap-12 mt-4">
+        <ProductGallery
+          images={product.images}
+          type={product.type}
+          productName={product.name}
+        />
 
-        {/* Details */}
         <div>
           <div className="flex items-center gap-2 mb-3">
             <span className={cn(
@@ -116,7 +135,7 @@ export default function ProductDetailPage() {
           </div>
 
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{product.name}</h1>
-          <p className="text-2xl font-bold text-primary-600 mb-4">{formatCurrency(product.price)}</p>
+          <p className="text-2xl font-bold text-accent-500 mb-4">{formatCurrency(product.price)}</p>
 
           <div className="flex items-center gap-2 mb-4">
             {product.stock_status === 'in_stock' ? (
@@ -132,16 +151,58 @@ export default function ProductDetailPage() {
 
           <p className="text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">{product.description}</p>
 
-          <button
-            onClick={() => setShowInquiry(true)}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 transition-colors"
-          >
-            <MessageSquare className="w-5 h-5" /> Enquire Now
-          </button>
+          {/* ── Dynamic CTA Bar ─────────────────────── */}
+          <div className="flex flex-wrap gap-3 mb-8">
+            {channels?.inquiry_form && (
+              <button
+                onClick={() => setShowInquiry(true)}
+                className="inline-flex items-center gap-2 px-5 py-3 bg-accent-500 text-white font-semibold rounded-xl hover:bg-accent-600 transition-colors shadow-lg shadow-accent-500/25"
+              >
+                <MessageSquare className="w-5 h-5" /> Enquire Now
+              </button>
+            )}
 
-          {/* Specs */}
+            {channels?.whatsapp && (
+              <a
+                href={getWhatsAppLink()}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-5 py-3 bg-green-500 text-white font-semibold rounded-xl hover:bg-green-600 transition-colors shadow-lg shadow-green-500/25"
+              >
+                <MessageCircle className="w-5 h-5" /> WhatsApp
+              </a>
+            )}
+
+            {channels?.email && (
+              <a
+                href={getMailtoLink()}
+                className="inline-flex items-center gap-2 px-5 py-3 bg-blue-500 text-white font-semibold rounded-xl hover:bg-blue-600 transition-colors shadow-lg shadow-blue-500/25"
+              >
+                <Mail className="w-5 h-5" /> Email Us
+              </a>
+            )}
+
+            {channels?.online_payment && (
+              <button
+                className="inline-flex items-center gap-2 px-5 py-3 bg-purple-600 text-white font-semibold rounded-xl hover:bg-purple-700 transition-colors shadow-lg shadow-purple-600/25"
+                onClick={() => toast.info('Online payment setup coming soon!')}
+              >
+                <CreditCard className="w-5 h-5" /> Buy Online
+              </button>
+            )}
+          </div>
+
+          {/* Payment info note */}
+          {(channels?.whatsapp || channels?.email) && (
+            <div className="p-4 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-xl mb-6">
+              <p className="text-sm text-amber-800 dark:text-amber-200">
+                💡 <strong>How to order:</strong> Contact us via WhatsApp or Email. After confirming your order, share your payment screenshot through chat or email for quick processing.
+              </p>
+            </div>
+          )}
+
           {product.specs && Object.keys(product.specs).length > 0 && (
-            <div className="mt-8">
+            <div className="mt-4">
               <h3 className="font-semibold text-gray-900 dark:text-white mb-3">Specifications</h3>
               <div className="border border-gray-200 dark:border-gray-800 rounded-lg overflow-hidden">
                 {Object.entries(product.specs).map(([key, value], i) => (
@@ -156,7 +217,6 @@ export default function ProductDetailPage() {
         </div>
       </div>
 
-      {/* Related */}
       {related.length > 0 && (
         <div className="mt-16">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Related Products</h2>
@@ -177,7 +237,7 @@ export default function ProductDetailPage() {
           >
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-bold text-gray-900 dark:text-white">Enquire About {product.name}</h3>
-              <button onClick={() => setShowInquiry(false)} className="text-gray-400 hover:text-gray-600">
+              <button onClick={() => setShowInquiry(false)} className="text-gray-400 hover:text-gray-600" aria-label="Close" title="Close">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -186,46 +246,34 @@ export default function ProductDetailPage() {
               <div className="text-center py-8">
                 <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-3" />
                 <p className="text-lg font-semibold text-gray-900 dark:text-white">Inquiry Sent!</p>
-                <p className="text-sm text-gray-500">We'll get back to you soon.</p>
+                <p className="text-sm text-gray-500 mt-2">We'll get back to you soon.</p>
+                {(channels?.whatsapp || channels?.email) && (
+                  <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-800 space-y-2">
+                    <p className="text-xs text-gray-500">You can also reach us directly:</p>
+                    <div className="flex justify-center gap-3">
+                      {channels?.whatsapp && (
+                        <a href={getWhatsAppLink()} target="_blank" rel="noopener noreferrer" className="text-sm text-green-600 hover:underline font-medium">💬 WhatsApp</a>
+                      )}
+                      {channels?.email && (
+                        <a href={getMailtoLink()} className="text-sm text-blue-600 hover:underline font-medium">📧 Email</a>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             ) : (
               <form onSubmit={handleInquiry} className="space-y-4">
-                <input
-                  type="text"
-                  placeholder="Your Name *"
-                  required
-                  value={inquiryForm.name}
-                  onChange={e => setInquiryForm({ ...inquiryForm, name: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-primary-500"
-                />
-                <input
-                  type="tel"
-                  placeholder="Phone Number *"
-                  required
-                  value={inquiryForm.phone}
-                  onChange={e => setInquiryForm({ ...inquiryForm, phone: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-primary-500"
-                />
-                <input
-                  type="email"
-                  placeholder="Email (optional)"
-                  value={inquiryForm.email}
-                  onChange={e => setInquiryForm({ ...inquiryForm, email: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-primary-500"
-                />
-                <textarea
-                  placeholder="Your Message (optional)"
-                  rows={3}
-                  value={inquiryForm.message}
-                  onChange={e => setInquiryForm({ ...inquiryForm, message: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-primary-500 resize-none"
-                />
-                <button
-                  type="submit"
-                  disabled={submitting}
-                  className="w-full py-2.5 bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 disabled:opacity-50 transition-colors"
-                >
-                  {submitting ? 'Sending...' : 'Send Inquiry'}
+                <input type="text" placeholder="Your Name *" required value={inquiryForm.name} onChange={e => setInquiryForm({ ...inquiryForm, name: e.target.value })} autoComplete="name"
+                  className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-primary-500" />
+                <input type="tel" placeholder="Phone Number *" required value={inquiryForm.phone} onChange={e => setInquiryForm({ ...inquiryForm, phone: e.target.value })} autoComplete="tel"
+                  className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-primary-500" />
+                <input type="email" placeholder="Email (optional)" value={inquiryForm.email} onChange={e => setInquiryForm({ ...inquiryForm, email: e.target.value })} autoComplete="email"
+                  className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-primary-500" />
+                <textarea placeholder="Your Message (optional)" rows={3} value={inquiryForm.message} onChange={e => setInquiryForm({ ...inquiryForm, message: e.target.value })}
+                  className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-primary-500 resize-none" />
+                <button type="submit" disabled={submitting}
+                  className="w-full py-2.5 bg-accent-500 text-white font-semibold rounded-lg hover:bg-accent-600 disabled:opacity-50 transition-colors">
+                  {submitting ? 'Sending…' : 'Send Inquiry'}
                 </button>
               </form>
             )}

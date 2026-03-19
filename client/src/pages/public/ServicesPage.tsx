@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Monitor, HardDrive, ArrowRight, CheckCircle, Wrench, BookOpen, Headphones, RefreshCw } from 'lucide-react';
+import { Monitor, HardDrive, ArrowRight, CheckCircle, Wrench, BookOpen, Headphones } from 'lucide-react';
 import ScrollReveal from '../../components/shared/ScrollReveal';
 
 const softwareServices = [
@@ -11,20 +11,20 @@ const softwareServices = [
 ];
 
 const hardwareServices = [
-  { title: 'Refurbished Laptops', desc: 'Quality-tested business laptops at 40-60% lower cost. Every unit undergoes thorough inspection, component testing, and comes with fresh OS installation.', icon: Monitor },
-  { title: 'POS Hardware', desc: 'Complete POS setups including receipt printers, barcode scanners, cash drawers, and customer displays. We help you choose the right combination.', icon: Wrench },
-  { title: 'Printers & Peripherals', desc: 'Thermal receipt printers, dot matrix printers, label printers, and all accessories. We carry top brands like Epson, TVS, and Honeywell.', icon: HardDrive },
+  { title: 'Refurbished Laptops', desc: 'Quality-tested business laptops at 40-60% lower cost. Every unit undergoes thorough inspection and comes with fresh OS installation.', icon: Monitor },
+  { title: 'POS Hardware', desc: 'Complete POS setups including receipt printers, barcode scanners, cash drawers, and customer displays.', icon: Wrench },
+  { title: 'Printers & Peripherals', desc: 'Thermal receipt printers, dot matrix printers, label printers, and all accessories from top brands.', icon: HardDrive },
 ];
 
 export default function ServicesPage() {
   return (
     <div>
       {/* Hero */}
-      <section className="bg-gradient-to-br from-primary-600 to-primary-800 text-white py-16 md:py-24">
+      <section className="bg-gradient-to-br from-primary-900 via-primary-800 to-primary-700 text-white py-16 md:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">Our Services</h1>
-            <p className="text-lg text-primary-100">
+            <p className="text-lg text-primary-200">
               Complete software and hardware solutions tailored for small and medium businesses.
             </p>
           </div>
@@ -45,7 +45,7 @@ export default function ServicesPage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {softwareServices.map((svc, i) => (
               <ScrollReveal key={i} delay={i * 0.1}>
-                <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-6 h-full flex flex-col">
+                <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-6 h-full flex flex-col hover-lift">
                   <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">{svc.title}</h3>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 flex-1">{svc.desc}</p>
                   <ul className="space-y-1.5 mb-4">
@@ -57,7 +57,7 @@ export default function ServicesPage() {
                   </ul>
                   <Link
                     to={`/products?type=software&category=${svc.category}`}
-                    className="text-primary-600 hover:text-primary-700 font-medium text-sm inline-flex items-center gap-1"
+                    className="text-accent-500 hover:text-accent-600 font-medium text-sm inline-flex items-center gap-1"
                   >
                     View Products <ArrowRight className="w-4 h-4" />
                   </Link>
@@ -82,7 +82,7 @@ export default function ServicesPage() {
           <div className="grid md:grid-cols-3 gap-6">
             {hardwareServices.map((svc, i) => (
               <ScrollReveal key={i} delay={i * 0.1}>
-                <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 h-full">
+                <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 h-full hover-lift">
                   <div className="w-10 h-10 bg-amber-100 dark:bg-amber-950 rounded-lg flex items-center justify-center mb-4">
                     <svc.icon className="w-5 h-5 text-amber-600 dark:text-amber-400" />
                   </div>
@@ -95,11 +95,11 @@ export default function ServicesPage() {
         </div>
       </section>
 
-      {/* Additional Services */}
+      {/* Support Services */}
       <section className="py-16 md:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <ScrollReveal>
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">We Also Provide</h2>
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">Support & Training</h2>
           </ScrollReveal>
           <div className="grid sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
             {[
@@ -108,7 +108,7 @@ export default function ServicesPage() {
               { icon: Headphones, title: 'Annual Support', desc: '1 year of free technical support with every purchase' },
             ].map((item, i) => (
               <ScrollReveal key={i} delay={i * 0.1}>
-                <div className="text-center p-6 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800">
+                <div className="text-center p-6 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 hover-lift">
                   <div className="w-12 h-12 bg-primary-100 dark:bg-primary-950 rounded-xl flex items-center justify-center mx-auto mb-4">
                     <item.icon className="w-6 h-6 text-primary-600" />
                   </div>
@@ -122,13 +122,13 @@ export default function ServicesPage() {
       </section>
 
       {/* CTA */}
-      <section className="py-16 bg-gradient-to-r from-primary-600 to-primary-800 text-white">
+      <section className="py-16 bg-gradient-to-r from-primary-900 to-primary-800 text-white">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-4">Need a Custom Solution?</h2>
-          <p className="text-primary-100 mb-8">We can tailor our products to fit your specific business needs.</p>
+          <p className="text-primary-200 mb-8">We can tailor our products to fit your specific business needs.</p>
           <Link
             to="/contact"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-white text-primary-700 font-semibold rounded-lg hover:bg-primary-50 transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-accent-500 text-white font-semibold rounded-xl hover:bg-accent-600 transition-colors shadow-lg shadow-accent-500/25"
           >
             Get a Free Consultation <ArrowRight className="w-4 h-4" />
           </Link>

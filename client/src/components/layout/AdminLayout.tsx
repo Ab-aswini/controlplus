@@ -1,15 +1,21 @@
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Package, MessageSquare, ShoppingCart, FileText, LogOut, Monitor, Menu, X } from 'lucide-react';
+import { LayoutDashboard, Package, MessageSquare, ShoppingCart, FileText, Users, LogOut, Menu, X, Settings, Receipt, Handshake, MessageCircle } from 'lucide-react';
 import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { cn } from '../../utils/cn';
+import Logo from '../ui/Logo';
 
 const ADMIN_LINKS = [
   { label: 'Dashboard', path: '/admin', icon: LayoutDashboard },
   { label: 'Products', path: '/admin/products', icon: Package },
   { label: 'Inquiries', path: '/admin/inquiries', icon: MessageSquare },
   { label: 'Orders', path: '/admin/orders', icon: ShoppingCart },
+  { label: 'Invoices', path: '/admin/invoices', icon: Receipt },
   { label: 'Blog', path: '/admin/blog', icon: FileText },
+  { label: 'Partners', path: '/admin/partners', icon: Handshake },
+  { label: 'Testimonials', path: '/admin/testimonials', icon: MessageCircle },
+  { label: 'Users', path: '/admin/users', icon: Users },
+  { label: 'Settings', path: '/admin/settings', icon: Settings },
 ];
 
 export default function AdminLayout() {
@@ -18,8 +24,8 @@ export default function AdminLayout() {
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     navigate('/admin/login');
   };
 
@@ -31,15 +37,10 @@ export default function AdminLayout() {
         sidebarOpen ? 'translate-x-0' : '-translate-x-full'
       )}>
         <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200 dark:border-gray-800">
-          <Link to="/admin" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
-              <Monitor className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-lg font-bold text-gray-900 dark:text-white">
-              Control<span className="text-primary-600">Plus</span>
-            </span>
+          <Link to="/admin" className="flex items-center">
+            <Logo className="h-8" />
           </Link>
-          <button onClick={() => setSidebarOpen(false)} className="lg:hidden text-gray-500">
+          <button onClick={() => setSidebarOpen(false)} className="lg:hidden text-gray-500" aria-label="Close sidebar">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -65,11 +66,11 @@ export default function AdminLayout() {
 
         <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 dark:border-gray-800">
           <div className="flex items-center justify-between">
-            <div className="text-sm">
-              <p className="font-medium text-gray-900 dark:text-white">{user?.name}</p>
+            <div className="text-sm min-w-0">
+              <p className="font-medium text-gray-900 dark:text-white truncate">{user?.name}</p>
               <p className="text-gray-500 text-xs">{user?.role}</p>
             </div>
-            <button onClick={handleLogout} className="p-2 text-gray-500 hover:text-red-600 transition-colors">
+            <button onClick={handleLogout} className="p-2 text-gray-500 hover:text-red-600 transition-colors flex-shrink-0" aria-label="Log out">
               <LogOut className="w-5 h-5" />
             </button>
           </div>
@@ -84,7 +85,7 @@ export default function AdminLayout() {
       {/* Main content */}
       <div className="flex-1 flex flex-col min-w-0">
         <header className="h-16 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 flex items-center px-6">
-          <button onClick={() => setSidebarOpen(true)} className="lg:hidden mr-4 text-gray-500">
+          <button onClick={() => setSidebarOpen(true)} className="lg:hidden mr-4 text-gray-500" aria-label="Open sidebar">
             <Menu className="w-5 h-5" />
           </button>
           <h1 className="text-lg font-semibold text-gray-900 dark:text-white">

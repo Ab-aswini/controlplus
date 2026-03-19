@@ -5,6 +5,7 @@ import { getOrders, createOrder, updateOrderStatus, deleteOrder } from '../../ap
 import { formatCurrency } from '../../utils/formatCurrency';
 import { formatDate } from '../../utils/formatDate';
 import { cn } from '../../utils/cn';
+import { toast } from 'sonner';
 
 const STATUS_OPTIONS = ['pending', 'confirmed', 'delivered', 'cancelled'] as const;
 const STATUS_TABS = [{ value: '', label: 'All' }, ...STATUS_OPTIONS.map(s => ({ value: s, label: s.charAt(0).toUpperCase() + s.slice(1) }))];
@@ -24,8 +25,8 @@ export default function OrdersPage() {
 
   useEffect(() => { load(filter || undefined); }, [filter]);
 
-  const handleStatus = async (id: number, status: string) => {
-    try { await updateOrderStatus(id, status); load(filter || undefined); } catch { alert('Failed to update'); }
+  const handleStatus = async (id: string, status: string) => {
+    try { await updateOrderStatus(id, status); toast.success('Status updated'); load(filter || undefined); } catch { toast.error('Failed to update'); }
   };
 
   const handleCreate = async (e: React.FormEvent) => {
@@ -42,14 +43,15 @@ export default function OrdersPage() {
       });
       setShowForm(false);
       setForm({ customer_name: '', customer_phone: '', product_name: '', quantity: '1', total_amount: '', notes: '' });
+      toast.success('Order created');
       load(filter || undefined);
-    } catch { alert('Failed to create order'); }
+    } catch { toast.error('Failed to create order'); }
     finally { setSaving(false); }
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     if (!confirm('Delete this order?')) return;
-    try { await deleteOrder(id); load(filter || undefined); } catch { alert('Failed to delete'); }
+    try { await deleteOrder(id); toast.success('Order deleted'); load(filter || undefined); } catch { toast.error('Failed to delete'); }
   };
 
   return (
@@ -100,7 +102,11 @@ export default function OrdersPage() {
                   <td className="px-4 py-3 text-gray-500">{order.quantity}</td>
                   <td className="px-4 py-3 font-medium text-gray-900 dark:text-white">{formatCurrency(order.total_amount)}</td>
                   <td className="px-4 py-3">
-                    <select value={order.status} onChange={e => handleStatus(order.id, e.target.value)}
+                    <select
+                      value={order.status}
+                      onChange={e => handleStatus(order.id, e.target.value)}
+                      aria-label={`Update status for order ${order.id}`}
+                      title="Update Order Status"
                       className={cn('text-xs font-medium px-2 py-1 rounded-lg border-0 outline-none cursor-pointer',
                         order.status === 'pending' ? 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300'
                         : order.status === 'confirmed' ? 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300'
@@ -112,7 +118,10 @@ export default function OrdersPage() {
                   </td>
                   <td className="px-4 py-3 text-gray-400 text-xs">{formatDate(order.created_at)}</td>
                   <td className="px-4 py-3">
-                    <button onClick={() => handleDelete(order.id)} className="p-1.5 text-gray-400 hover:text-red-600 transition-colors">
+                    <button onClick={() => handleDelete(order.id)} className="p-1.5 text-gray-400 hover:text-red-600 transition-colors"
+                      aria-label={`Delete order ${order.id}`}
+                      title="Delete Order"
+                    >
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </td>
@@ -125,7 +134,7 @@ export default function OrdersPage() {
 
       {/* Create Order Modal */}
       {showForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" onClick={() => setShowForm(false)}>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50" onClick={() => setShowForm(false)} aria-hidden="true">
           <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 max-w-md w-full shadow-xl" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-bold text-gray-900 dark:text-white">Add Order</h3>
@@ -148,7 +157,7 @@ export default function OrdersPage() {
                 className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-primary-500 resize-none" />
               <button type="submit" disabled={saving}
                 className="w-full py-2.5 bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 disabled:opacity-50 transition-colors">
-                {saving ? 'Creating...' : 'Create Order'}
+                {saving ? 'Creating…' : 'Create Order'}
               </button>
             </form>
           </div>

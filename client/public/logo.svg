@@ -1,0 +1,10 @@
+<svg width="200" height="50" viewBox="0 0 200 50" xmlns="http://www.w3.org/2000/svg">
+  <!-- C+ icon -->
+  <g transform="translate(0, 3)" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none" class="logo-icon">
+    <path d="M 30 12 A 14 14 0 1 0 30 33" stroke="#3B3B3B"/>
+    <line x1="30" y1="8" x2="30" y2="20" stroke="#3B3B3B"/>
+    <line x1="24" y1="14" x2="36" y2="14" stroke="#3B3B3B"/>
+  </g>
+  <!-- Text -->
+  <text x="46" y="34" font-family="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif" font-weight="700" font-size="24" fill="#3B3B3B">Control<tspan fill="#E8913A">Plus</tspan></text>
+</svg>

@@ -1,23 +1,23 @@
 import { Link } from 'react-router-dom';
 import { Target, Eye, Users, Award, Shield, HeadphonesIcon, ArrowRight } from 'lucide-react';
 import ScrollReveal from '../../components/shared/ScrollReveal';
+import Timeline from '../../components/shared/Timeline';
+import ScrollExpandMedia from '../../components/ui/scroll-expansion-hero';
 
 export default function AboutPage() {
   return (
-    <div>
-      {/* Hero */}
-      <section className="bg-gradient-to-br from-primary-600 to-primary-800 text-white py-16 md:py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">About ControlPlus</h1>
-            <p className="text-lg text-primary-100">
-              We're on a mission to empower small and medium businesses across India with affordable, reliable technology solutions.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Story */}
+    <>
+      <ScrollExpandMedia
+        mediaType="video"
+        mediaSrc="https://me7aitdbxq.ufs.sh/f/2wsMIGDMQRdYuZ5R8ahEEZ4aQK56LizRdfBSqeDMsmUIrJN1"
+        posterSrc="https://images.pexels.com/videos/5752729/space-earth-universe-cosmos-5752729.jpeg"
+        bgImageSrc="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1920&auto=format&fit=crop"
+        title="About ControlPlus"
+        date="Our Mission"
+        scrollToExpand="Scroll downwards to discover our story"
+        textBlend={false}
+      >
+        <div className="bg-white dark:bg-gray-950 w-full">
       <section className="py-16 md:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-12 items-center">
@@ -56,12 +56,25 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Mission & Vision */}
+      {/* Timeline */}
       <section className="py-16 md:py-20 bg-gray-50 dark:bg-gray-900">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <ScrollReveal>
+            <div className="text-center mb-16">
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">Our Journey</h2>
+              <p className="text-gray-500 dark:text-gray-400">Key milestones in the ControlPlus story</p>
+            </div>
+          </ScrollReveal>
+          <Timeline />
+        </div>
+      </section>
+
+      {/* Mission & Vision */}
+      <section className="py-16 md:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-6">
             <ScrollReveal>
-              <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 border border-gray-200 dark:border-gray-700 h-full">
+              <div className="bg-white dark:bg-gray-900 rounded-2xl p-8 border border-gray-200 dark:border-gray-800 h-full">
                 <div className="w-12 h-12 bg-primary-100 dark:bg-primary-950 rounded-xl flex items-center justify-center mb-4">
                   <Target className="w-6 h-6 text-primary-600" />
                 </div>
@@ -72,13 +85,13 @@ export default function AboutPage() {
               </div>
             </ScrollReveal>
             <ScrollReveal delay={0.1}>
-              <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 border border-gray-200 dark:border-gray-700 h-full">
-                <div className="w-12 h-12 bg-primary-100 dark:bg-primary-950 rounded-xl flex items-center justify-center mb-4">
-                  <Eye className="w-6 h-6 text-primary-600" />
+              <div className="bg-white dark:bg-gray-900 rounded-2xl p-8 border border-gray-200 dark:border-gray-800 h-full">
+                <div className="w-12 h-12 bg-accent-100 dark:bg-accent-900/30 rounded-xl flex items-center justify-center mb-4">
+                  <Eye className="w-6 h-6 text-accent-500" />
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">Our Vision</h3>
                 <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                  To become India's most trusted name in business technology solutions, known for quality products, honest pricing, and exceptional after-sales support. We envision a future where technology drives growth for every business.
+                  To become India's most trusted name in business technology solutions, known for quality products, honest pricing, and exceptional after-sales support.
                 </p>
               </div>
             </ScrollReveal>
@@ -87,7 +100,7 @@ export default function AboutPage() {
       </section>
 
       {/* Values */}
-      <section className="py-16 md:py-20">
+      <section className="py-16 md:py-20 bg-gray-50 dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <ScrollReveal>
             <div className="text-center mb-12">
@@ -96,13 +109,13 @@ export default function AboutPage() {
           </ScrollReveal>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { icon: Users, title: 'Customer First', desc: 'Every decision we make starts with our customers\' needs.' },
+              { icon: Users, title: 'Customer First', desc: "Every decision we make starts with our customers' needs." },
               { icon: Award, title: 'Quality Assured', desc: 'Rigorous testing and quality checks on every product.' },
               { icon: Shield, title: 'Honest Pricing', desc: 'Transparent pricing with no hidden costs or surprises.' },
               { icon: HeadphonesIcon, title: 'Dedicated Support', desc: 'Local support team for setup, training, and troubleshooting.' },
             ].map((item, i) => (
               <ScrollReveal key={i} delay={i * 0.1}>
-                <div className="text-center p-6 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800">
+                <div className="text-center p-6 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover-lift">
                   <div className="w-12 h-12 bg-primary-100 dark:bg-primary-950 rounded-xl flex items-center justify-center mx-auto mb-4">
                     <item.icon className="w-6 h-6 text-primary-600" />
                   </div>
@@ -116,18 +129,20 @@ export default function AboutPage() {
       </section>
 
       {/* CTA */}
-      <section className="py-16 bg-gradient-to-r from-primary-600 to-primary-800 text-white">
+      <section className="py-16 bg-gradient-to-r from-primary-900 to-primary-800 text-white">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-4">Let's Work Together</h2>
-          <p className="text-primary-100 mb-8">Ready to take your business to the next level?</p>
+          <p className="text-primary-200 mb-8">Ready to take your business to the next level?</p>
           <Link
             to="/contact"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-white text-primary-700 font-semibold rounded-lg hover:bg-primary-50 transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-accent-500 text-white font-semibold rounded-xl hover:bg-accent-600 transition-colors shadow-lg shadow-accent-500/25"
           >
             Contact Us <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
       </section>
-    </div>
+        </div>
+      </ScrollExpandMedia>
+    </>
   );
 }

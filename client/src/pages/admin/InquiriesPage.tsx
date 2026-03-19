@@ -4,6 +4,7 @@ import { Inquiry } from '../../types';
 import { getInquiries, updateInquiryStatus, deleteInquiry } from '../../api/inquiries';
 import { formatDate } from '../../utils/formatDate';
 import { cn } from '../../utils/cn';
+import { toast } from 'sonner';
 
 const STATUS_OPTIONS = ['new', 'contacted', 'closed'] as const;
 const STATUS_TABS = [{ value: '', label: 'All' }, { value: 'new', label: 'New' }, { value: 'contacted', label: 'Contacted' }, { value: 'closed', label: 'Closed' }];
@@ -20,16 +21,17 @@ export default function InquiriesPage() {
 
   useEffect(() => { load(filter || undefined); }, [filter]);
 
-  const handleStatus = async (id: number, status: string) => {
+  const handleStatus = async (id: string, status: string) => {
     try {
       await updateInquiryStatus(id, status);
+      toast.success('Status updated');
       load(filter || undefined);
-    } catch { alert('Failed to update status'); }
+    } catch { toast.error('Failed to update status'); }
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     if (!confirm('Delete this inquiry?')) return;
-    try { await deleteInquiry(id); load(filter || undefined); } catch { alert('Failed to delete'); }
+    try { await deleteInquiry(id); toast.success('Inquiry deleted'); load(filter || undefined); } catch { toast.error('Failed to delete'); }
   };
 
   return (
@@ -85,6 +87,8 @@ export default function InquiriesPage() {
                     <select
                       value={inq.status}
                       onChange={e => handleStatus(inq.id, e.target.value)}
+                      aria-label={`Update status for ${inq.name}`}
+                      title="Update Inquiry Status"
                       className={cn(
                         'text-xs font-medium px-2 py-1 rounded-lg border-0 outline-none cursor-pointer',
                         inq.status === 'new' ? 'bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-300'
@@ -97,7 +101,7 @@ export default function InquiriesPage() {
                   </td>
                   <td className="px-4 py-3 text-gray-400 text-xs">{formatDate(inq.created_at)}</td>
                   <td className="px-4 py-3">
-                    <button onClick={() => handleDelete(inq.id)} className="p-1.5 text-gray-400 hover:text-red-600 transition-colors">
+                    <button onClick={() => handleDelete(inq.id)} className="p-1.5 text-gray-400 hover:text-red-600 transition-colors" aria-label={`Delete inquiry from ${inq.name}`} title="Delete Inquiry">
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </td>
