@@ -116,11 +116,11 @@ export default function OrdersPage() {
       const items = await getOrderItems(orderId);
 
       // Generate invoice number
-      const prefix = settings?.invoice_prefix || 'INV';
+      const prefix = settings?.invoice_settings?.prefix || 'INV';
       const invoiceNumber = await getNextInvoiceNumber(prefix);
 
       // Calculate totals
-      const taxRate = settings?.tax_rate || 0;
+      const taxRate = settings?.invoice_settings?.tax_rate || 0;
       const subtotal = items.length > 0
         ? items.reduce((sum, i) => sum + i.total, 0)
         : order.total_amount || 0;
