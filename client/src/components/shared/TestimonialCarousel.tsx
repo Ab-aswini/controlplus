@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Star, ChevronLeft, ChevronRight } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import ScrollReveal from './ScrollReveal';
+import { cn } from '../../utils/cn';
 
 interface Testimonial {
   id: string;
@@ -70,60 +71,67 @@ export default function TestimonialCarousel() {
               initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -50 }}
-              transition={{ duration: 0.3 }}
-              className="bg-white dark:bg-gray-800 rounded-2xl p-8 md:p-10 border border-gray-200 dark:border-gray-700 shadow-sm"
+              className="bg-white dark:bg-gray-800/80 rounded-2xl p-8 md:p-10 border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-lg dark:hover:shadow-primary-500/10 relative overflow-hidden transition-all duration-300"
             >
-              {/* Stars */}
-              <div className="flex gap-1 mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <Star
-                    key={i}
-                    className={`w-5 h-5 ${i < t.rating ? 'text-amber-400 fill-amber-400' : 'text-gray-300'}`}
-                  />
-                ))}
+              {/* Decorative background quote mark */}
+              <div className="absolute top-4 right-8 text-9xl font-serif text-gray-100 dark:text-gray-700/20 select-none z-0">
+                &rdquo;
               </div>
 
-              {/* Quote */}
-              <blockquote className="text-lg md:text-xl text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-                "{t.quote}"
-              </blockquote>
-
-              {/* Author */}
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center text-primary-600 font-bold text-lg">
-                  {t.name.charAt(0)}
+              <div className="relative z-10">
+                {/* Stars */}
+                <div className="flex gap-1 mb-6">
+                  {[...Array(5)].map((_, i) => (
+                    <Star
+                      key={i}
+                      className={`w-5 h-5 ${i < t.rating ? 'text-amber-400 fill-amber-400' : 'text-gray-300'}`}
+                    />
+                  ))}
                 </div>
-                <div>
-                  <p className="font-semibold text-gray-900 dark:text-white">{t.name}</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    {t.role}, {t.company}
-                  </p>
+
+                {/* Quote */}
+                <blockquote className="text-lg md:text-xl text-gray-700 dark:text-gray-300 leading-relaxed mb-8 font-medium">
+                  "{t.quote}"
+                </blockquote>
+
+                {/* Author */}
+                <div className="flex items-center gap-4 mt-auto">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary-100 to-primary-200 dark:from-primary-900/50 dark:to-primary-800/50 flex items-center justify-center text-primary-700 dark:text-primary-300 font-bold text-lg shadow-inner">
+                    {t.name.charAt(0)}
+                  </div>
+                  <div>
+                    <p className="font-semibold text-gray-900 dark:text-white">{t.name}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      {t.role}, <span className="text-primary-600 dark:text-primary-400">{t.company}</span>
+                    </p>
+                  </div>
                 </div>
               </div>
             </motion.div>
           </AnimatePresence>
 
           {/* Navigation */}
-          <div className="flex items-center justify-center gap-4 mt-6">
+          <div className="flex items-center justify-center gap-6 mt-8">
             <button
               onClick={prev}
-              className="p-2 rounded-full bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 shadow-sm transition-colors border border-gray-100 dark:border-gray-700"
+              className="p-2.5 rounded-full bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/30 shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 dark:border-gray-700"
               aria-label="Previous Testimonial"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
 
-            <div className="flex gap-2">
+            <div className="flex gap-3">
               {testimonials.map((_, i) => (
                 <button
                   key={i}
                   onClick={() => setCurrent(i)}
                   aria-label={`Go to testimonial ${i + 1}`}
-                  className={`w-2.5 h-2.5 rounded-full transition-colors ${
+                  className={cn(
+                    "h-2.5 rounded-full transition-all duration-300",
                     i === current
-                      ? 'bg-primary-600 w-8'
-                      : 'bg-primary-200 dark:bg-primary-800/50 hover:bg-primary-400'
-                  }`}
+                      ? 'bg-gradient-to-r from-primary-500 to-accent-500 w-8'
+                      : 'bg-gray-200 dark:bg-gray-700 hover:bg-primary-300 dark:hover:bg-primary-600 w-2.5'
+                  )}
                 />
               ))}
             </div>

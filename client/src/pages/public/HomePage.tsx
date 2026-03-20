@@ -207,11 +207,14 @@ export default function HomePage() {
       <ClientsSection />
 
       {/* 7. Why Choose Us */}
-      <section className="py-16 md:py-20">
+      <section className="py-16 md:py-20 relative overflow-hidden">
+        {/* Decorative background blur */}
+        <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-gray-50 dark:from-gray-900 to-transparent -z-10" />
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <ScrollReveal>
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">Why Choose ControlPlus?</h2>
+            <div className="text-center mb-16">
+              <h2 className="heading-underline text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">Why Choose ControlPlus?</h2>
             </div>
           </ScrollReveal>
           <motion.div
@@ -219,7 +222,7 @@ export default function HomePage() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
-            className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6"
+            className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6"
           >
             {[
               { icon: IndianRupee, title: 'Affordable Pricing', desc: 'Solutions that fit your budget. No hidden costs.' },
@@ -232,13 +235,14 @@ export default function HomePage() {
                 variants={staggerItem}
                 whileHover={{ y: -6, scale: 1.02 }}
                 transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                className="h-full"
               >
-                <div className="text-center p-3 sm:p-6 rounded-2xl bg-gray-50/50 dark:bg-gray-900 border border-gray-200/60 dark:border-gray-800 hover:shadow-lg transition-shadow h-full">
-                  <div className="w-14 h-14 bg-primary-100 dark:bg-primary-950 rounded-xl flex items-center justify-center mx-auto mb-4">
-                    <item.icon className="w-7 h-7 text-primary-600" />
+                <div className="group text-center p-4 sm:p-8 rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-xl hover:border-primary-100 dark:hover:border-primary-800 transition-all duration-300 h-full">
+                  <div className="w-16 h-16 bg-primary-50 dark:bg-primary-900/50 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:bg-primary-100 dark:group-hover:bg-primary-900 transition-all duration-300">
+                    <item.icon className="w-8 h-8 text-primary-600 dark:text-primary-400" />
                   </div>
-                  <h3 className="font-bold text-gray-900 dark:text-white mb-2 text-sm sm:text-base">{item.title}</h3>
-                  <p className="text-[10px] sm:text-sm text-gray-500 dark:text-gray-400">{item.desc}</p>
+                  <h3 className="font-bold text-gray-900 dark:text-white mb-3 text-base sm:text-lg">{item.title}</h3>
+                  <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{item.desc}</p>
                 </div>
               </motion.div>
             ))}
@@ -268,24 +272,30 @@ export default function HomePage() {
       )}
 
       {/* 10. CTA Section */}
-      <section className="py-16 md:py-20 bg-gradient-to-r from-primary-900 to-primary-800 text-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Grow Your Business?</h2>
-          <p className="text-primary-200 mb-8 max-w-2xl mx-auto text-lg">
+      {/* 10. CTA Section */}
+      <section className="relative py-20 bg-primary-900 border-t border-primary-800 text-white overflow-hidden">
+        {/* Decorative Grid Overlay */}
+        <div className="absolute inset-0 bg-dot-pattern opacity-10 mix-blend-overlay pointer-events-none" />
+        
+        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center z-10">
+          <h2 className="text-4xl md:text-5xl font-extrabold mb-6 tracking-tight drop-shadow-md">
+            Ready to Build Your Business?
+          </h2>
+          <p className="text-primary-100 mb-10 max-w-2xl mx-auto text-lg md:text-xl font-medium leading-relaxed">
             Get in touch with us today for a free consultation and demo of our products.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               to="/contact"
-              className="inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-accent-500 text-white font-semibold rounded-xl hover:bg-accent-600 transition-colors shadow-lg shadow-accent-500/25"
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-primary-950 font-bold rounded-xl hover:bg-gray-50 hover:scale-105 transition-all duration-300 shadow-xl"
             >
               Get in Touch
             </Link>
             <a
-              href="https://wa.me/919876543210"
+              href="https://wa.me/919658791783"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 px-7 py-3.5 border-2 border-white/30 text-white font-semibold rounded-xl hover:bg-white/10 transition-colors"
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 border-2 border-white/20 hover:border-white/40 text-white font-bold rounded-xl hover:bg-white/10 transition-all duration-300"
             >
               WhatsApp Us
             </a>

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Phone, Mail, MapPin, Clock, CheckCircle, MessageCircle } from 'lucide-react';
 import { submitInquiry } from '../../api/inquiries';
 import { useSettings } from '../../context/SettingsContext';
-import { COMPANY_PHONE, COMPANY_EMAIL, COMPANY_ADDRESS, WHATSAPP_NUMBER } from '../../utils/constants';
+import { COMPANY_PHONE, COMPANY_EMAIL, COMPANY_ADDRESS, WHATSAPP_NUMBER, COMPANY_SUPPORT_PHONE } from '../../utils/constants';
 import ScrollReveal from '../../components/shared/ScrollReveal';
 import { toast } from 'sonner';
 
@@ -35,10 +35,11 @@ export default function ContactPage() {
   return (
     <div>
       {/* Hero */}
-      <section className="bg-gradient-to-br from-primary-900 via-primary-800 to-primary-700 text-white py-16 md:py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Get in Touch</h1>
-          <p className="text-primary-200 max-w-2xl mx-auto text-lg">
+      <section className="relative bg-gray-50 dark:bg-gray-900 py-16 md:py-24 border-b border-gray-200 dark:border-gray-800 overflow-hidden">
+        <div className="absolute inset-0 bg-dot-pattern opacity-[0.03] dark:opacity-10 mix-blend-overlay" />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-4 tracking-tight">Get in Touch</h1>
+          <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
             Have questions about our products or need a custom solution? We'd love to hear from you.
           </p>
         </div>
@@ -50,7 +51,8 @@ export default function ContactPage() {
           <ScrollReveal className="lg:col-span-2 space-y-6">
             <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-6 space-y-6">
               {[
-                { icon: Phone, label: 'Phone', value: phone },
+                { icon: Phone, label: 'Sales & Inquiry', value: phone },
+                { icon: Phone, label: 'Technical Support', value: COMPANY_SUPPORT_PHONE },
                 { icon: Mail, label: 'Email', value: email },
                 { icon: MapPin, label: 'Address', value: address },
                 { icon: Clock, label: 'Business Hours', value: 'Mon - Sat: 10:00 AM - 7:00 PM' },
@@ -171,7 +173,7 @@ export default function ContactPage() {
           <div className="rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-800">
             <iframe
               title="ControlPlus Location"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d241317.11609823277!2d72.74109995709657!3d19.08219783958221!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7c6306644edc1%3A0x5da4ed8f8d648c69!2sMumbai%2C%20Maharashtra!5e0!3m2!1sen!2sin!4v1710000000000!5m2!1sen!2sin"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d234.5!2d83.4734726!3d20.7070229!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a240f0d6aa5733b%3A0x4d3e2446152614ab!2sGyanodaya%20Academy!5e0!3m2!1sen!2sin!4v1710000000000!5m2!1sen!2sin"
               width="100%"
               height="350"
               allowFullScreen

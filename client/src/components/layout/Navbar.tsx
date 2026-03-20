@@ -16,8 +16,8 @@ export default function Navbar() {
 
   return (
     <>
-      <div className="sticky top-0 z-50 md:top-4 md:pt-2 w-full px-0 md:px-4 max-w-7xl mx-auto transition-all duration-300">
-        <nav className="bg-white/60 dark:bg-gray-950/60 backdrop-blur-2xl border-b md:border border-gray-200/50 dark:border-gray-800/50 shadow-sm md:shadow-lg md:rounded-2xl transition-all duration-300">
+      <div className="fixed top-0 z-50 w-full transition-all duration-300 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 shadow-sm">
+        <nav className="max-w-7xl mx-auto relative">
           <div className="px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <Link to="/" className="flex items-center">
@@ -25,20 +25,31 @@ export default function Navbar() {
           </Link>
 
           <div className="hidden md:flex items-center gap-1">
-            {NAV_LINKS.map(link => (
-              <Link
-                key={link.path}
-                to={link.path}
-                className={cn(
-                  'px-3 py-2 rounded-lg text-sm font-medium transition-colors',
-                  location.pathname === link.path
-                    ? 'bg-primary-50 text-primary-700 dark:bg-primary-950 dark:text-primary-300'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800'
-                )}
-              >
-                {link.label}
-              </Link>
-            ))}
+            {NAV_LINKS.map(link => {
+              const isActive = location.pathname === link.path;
+              return (
+                <Link
+                  key={link.path}
+                  to={link.path}
+                  className={cn(
+                    'relative px-3 py-2 rounded-lg text-sm font-medium transition-colors group',
+                    isActive
+                      ? 'text-primary-700 dark:text-primary-400'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50/80 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800/80'
+                  )}
+                >
+                  {link.label}
+                  {/* Subtle active indicator mark */}
+                  {isActive && (
+                    <motion.div 
+                      layoutId="nav-indicator"
+                      className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-accent-500"
+                      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                    />
+                  )}
+                </Link>
+              );
+            })}
           </div>
 
           <div className="flex items-center gap-2">

@@ -37,11 +37,14 @@ export default function ProductCard({ product }: { product: Product }) {
     >
       <Link
         to={`/products/${product.slug}`}
-        className="block bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden hover:shadow-xl hover:border-gray-200 dark:hover:border-gray-700 transition-all duration-300 group shadow-sm hover:-translate-y-1"
+        className="block bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden shadow-sm hover:shadow-xl hover:bg-gray-50 dark:hover:bg-gray-700/80 hover:border-primary-100 dark:hover:border-primary-500/30 dark:hover:shadow-primary-500/10 transition-all duration-500 group hover:-translate-y-1"
       >
-        <div className="relative aspect-[4/5] sm:aspect-[4/3] bg-gray-50/50 dark:bg-gray-800 flex items-center justify-center overflow-hidden">
+        <div className="relative aspect-[4/5] sm:aspect-[4/3] bg-gray-50/50 dark:bg-gray-900/50 flex items-center justify-center overflow-hidden">
+          {/* Subtle hover overlay */}
+          <div className="absolute inset-0 bg-primary-500/0 group-hover:bg-primary-500/5 transition-colors duration-500 z-10 pointer-events-none" />
+          
           {primaryImage ? (
-            <img src={primaryImage.image_url} alt={product.name} loading="lazy" width={400} height={400} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+            <img src={primaryImage.image_url} alt={product.name} loading="lazy" width={400} height={400} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
           ) : (
             <div className="text-gray-400 dark:text-gray-600">
               {product.type === 'software' ? <Monitor className="w-12 h-12" /> : <HardDrive className="w-12 h-12" />}

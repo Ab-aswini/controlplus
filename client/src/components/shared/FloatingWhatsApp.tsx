@@ -1,12 +1,13 @@
 import { MessageCircle } from 'lucide-react';
 import { useSettings } from '../../context/SettingsContext';
+import { WHATSAPP_NUMBER } from '../../utils/constants';
 
 export default function FloatingWhatsApp() {
   const { settings } = useSettings();
 
   // Only show if WhatsApp channel is globally enabled
   if (!settings?.order_channels?.whatsapp) return null;
-  const phone = settings.contact_info?.whatsapp || '919876543210';
+  const phone = settings.contact_info?.whatsapp || WHATSAPP_NUMBER;
 
   return (
     <a

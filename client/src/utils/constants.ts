@@ -21,7 +21,8 @@ export const HARDWARE_CATEGORIES = [
   { value: 'pos', label: 'POS Hardware' },
 ];
 
-export const WHATSAPP_NUMBER = '919876543210';
-export const COMPANY_PHONE = '+91 98765 43210';
-export const COMPANY_EMAIL = 'info@controlplus.in';
-export const COMPANY_ADDRESS = 'Shop No. 12, Business Hub, Main Road, City - 400001';
+export const WHATSAPP_NUMBER = '919658791783';
+export const COMPANY_PHONE = '+91 96587 91783';
+export const COMPANY_SUPPORT_PHONE = '+91 94372 27535';
+export const COMPANY_EMAIL = 'controlplus.2020@gmail.com';
+export const COMPANY_ADDRESS = 'Controlplus (Gyanodaya Academy), Koshal Nagar Road, Balangir, Odisha 767002';

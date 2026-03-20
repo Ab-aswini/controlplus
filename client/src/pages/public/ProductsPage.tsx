@@ -78,10 +78,11 @@ export default function ProductsPage() {
   return (
     <div>
       {/* Hero */}
-      <section className="bg-gradient-to-br from-primary-900 via-primary-800 to-primary-700 text-white py-12 md:py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-3xl md:text-4xl font-bold mb-2">Our Products</h1>
-          <p className="text-primary-200">Browse our complete range of software and hardware solutions</p>
+      <section className="relative bg-gray-50 dark:bg-gray-900 py-16 md:py-20 border-b border-gray-200 dark:border-gray-800 overflow-hidden">
+        <div className="absolute inset-0 bg-dot-pattern opacity-[0.03] dark:opacity-10 mix-blend-overlay" />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-4 tracking-tight">Our Products</h1>
+          <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">Browse our complete range of software and hardware solutions</p>
         </div>
       </section>
 

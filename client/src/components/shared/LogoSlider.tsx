@@ -5,6 +5,7 @@ interface Partner {
   id: string;
   name: string;
   logo_url: string;
+  website_url: string | null;
 }
 
 // Fallback hardcoded list (used if no DB data)
@@ -20,7 +21,7 @@ export default function LogoSlider() {
   useEffect(() => {
     supabase
       .from('partners')
-      .select('id, name, logo_url')
+      .select('id, name, logo_url, website_url')
       .eq('type', 'technology')
       .order('sort_order')
       .then(({ data }) => {
@@ -50,9 +51,13 @@ export default function LogoSlider() {
             const partner = hasDbLogos ? partners.find(p => p.name === name) : null;
             const hasImage = partner && partner.logo_url;
             return (
-              <div
+              <a
                 key={i}
-                className="inline-flex items-center justify-center mx-3 md:mx-5 shrink-0 group relative p-1"
+                href={partner?.website_url || '#'}
+                target={partner?.website_url ? "_blank" : undefined}
+                rel={partner?.website_url ? "noopener noreferrer" : undefined}
+                className="inline-flex items-center justify-center mx-3 md:mx-5 shrink-0 group relative p-1 cursor-pointer"
+                onClick={(e) => !partner?.website_url && e.preventDefault()}
               >
                 <div className="px-6 py-3 rounded-2xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-sm transition-all duration-300 group-hover:-translate-y-1 group-hover:scale-105 group-hover:shadow-md group-hover:border-primary-200 dark:group-hover:border-primary-800">
                   {hasImage ? (
@@ -63,7 +68,7 @@ export default function LogoSlider() {
                     </span>
                   )}
                 </div>
-              </div>
+              </a>
             );
           })}
         </div>

@@ -34,14 +34,13 @@ export default function ServicesPage() {
   return (
     <div>
       {/* Hero */}
-      <section className="bg-gradient-to-br from-primary-900 via-primary-800 to-primary-700 text-white py-16 md:py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">Our Services</h1>
-            <p className="text-lg text-primary-200">
-              Complete software and hardware solutions tailored for small and medium businesses.
-            </p>
-          </div>
+      <section className="relative bg-gray-50 dark:bg-gray-900 py-16 md:py-24 border-b border-gray-200 dark:border-gray-800 overflow-hidden">
+        <div className="absolute inset-0 bg-dot-pattern opacity-[0.03] dark:opacity-10 mix-blend-overlay" />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-4 tracking-tight">Our Services</h1>
+          <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+            Complete software and hardware solutions tailored for small and medium businesses.
+          </p>
         </div>
       </section>
 

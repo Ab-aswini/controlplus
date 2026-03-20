@@ -207,7 +207,12 @@ export default function DashboardPage() {
             <div className="flex items-center justify-center gap-4 mt-2">
               {inquiryChartData.map(item => (
                 <div key={item.name} className="flex items-center gap-1.5 text-xs text-gray-500">
-                  <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.fill }} />
+                  <span className={cn(
+                    "w-2.5 h-2.5 rounded-full",
+                    item.name === 'New' ? "bg-green-500" :
+                    item.name === 'Contacted' ? "bg-blue-500" :
+                    "bg-gray-500"
+                  )} />
                   {item.name} ({item.value})
                 </div>
               ))}

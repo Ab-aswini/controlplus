@@ -37,7 +37,7 @@ export interface SiteSettings {
 
 const DEFAULTS: SiteSettings = {
   order_channels: { email: true, whatsapp: true, inquiry_form: true, online_payment: false },
-  contact_info: { email: 'info@controlplus.in', phone: '+91 98765 43210', whatsapp: '919876543210', address: '' },
+  contact_info: { email: 'controlplus.2020@gmail.com', phone: '+91 96587 91783', whatsapp: '919658791783', address: 'Controlplus (Gyanodaya Academy), Koshal Nagar Road, Balangir, Odisha 767002' },
   invoice_settings: { company_name: 'ControlPlus', gstin: '', tax_rate: 18, prefix: 'INV', next_number: 1 },
   payment_gateway: { provider: 'razorpay', key_id: '', enabled: false },
 };

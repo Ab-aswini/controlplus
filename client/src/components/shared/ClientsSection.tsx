@@ -40,9 +40,13 @@ export default function ClientsSection() {
       <div className="w-full overflow-hidden [mask-image:_linear-gradient(to_right,transparent_0,_black_128px,_black_calc(100%-128px),transparent_100%)]">
         <div className="flex w-max animate-scroll-logos hover:[animation-play-state:paused] items-center">
           {tripled.map((client, i) => (
-            <div
+            <a
               key={i}
-              className="inline-flex items-center justify-center mx-3 md:mx-5 shrink-0 group relative p-1"
+              href={client.website_url || '#'}
+              target={client.website_url ? "_blank" : undefined}
+              rel={client.website_url ? "noopener noreferrer" : undefined}
+              className="inline-flex items-center justify-center mx-3 md:mx-5 shrink-0 group relative p-1 cursor-pointer"
+              onClick={(e) => !client.website_url && e.preventDefault()}
             >
               <div className="px-6 py-3 rounded-2xl bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-sm transition-all duration-300 group-hover:-translate-y-1 group-hover:scale-105 group-hover:shadow-md group-hover:border-primary-200 dark:group-hover:border-primary-800 flex items-center gap-3">
                 {client.logo_url ? (
@@ -56,7 +60,7 @@ export default function ClientsSection() {
                   {client.name}
                 </span>
               </div>
-            </div>
+            </a>
           ))}
         </div>
       </div>
